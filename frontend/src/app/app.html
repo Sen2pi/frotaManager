@@ -1,0 +1,94 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar Navigation -->
+  <mat-sidenav #drawer class="sidenav" fixedInViewport
+      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'"
+      [opened]="(isHandset$ | async) === false">
+    
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <mat-icon class="logo-icon">directions_car</mat-icon>
+        <h2 class="logo-text">Gestionnaire de Flotte</h2>
+      </div>
+    </div>
+
+    <mat-nav-list class="nav-list">
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" class="nav-item">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Tableau de Bord</span>
+      </a>
+      
+      <a mat-list-item routerLink="/vehicles" routerLinkActive="active-link" class="nav-item">
+        <mat-icon matListItemIcon>directions_car</mat-icon>
+        <span matListItemTitle>Véhicules</span>
+      </a>
+      
+      <a mat-list-item routerLink="/drivers" routerLinkActive="active-link" class="nav-item">
+        <mat-icon matListItemIcon>person</mat-icon>
+        <span matListItemTitle>Conducteurs</span>
+      </a>
+      
+      <a mat-list-item routerLink="/maintenance" routerLinkActive="active-link" class="nav-item">
+        <mat-icon matListItemIcon>build</mat-icon>
+        <span matListItemTitle>Maintenance</span>
+      </a>
+      
+      <a mat-list-item routerLink="/notifications" routerLinkActive="active-link" class="nav-item">
+        <mat-icon matListItemIcon>notifications</mat-icon>
+        <span matListItemTitle>Notifications</span>
+      </a>
+    </mat-nav-list>
+
+    <div class="sidebar-footer">
+      <mat-divider></mat-divider>
+      <div class="user-info">
+        <mat-icon>account_circle</mat-icon>
+        <span>Administrateur</span>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <!-- Main Content -->
+  <mat-sidenav-content class="sidenav-content">
+    <!-- Top Toolbar -->
+    <mat-toolbar color="primary" class="toolbar">
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+        class="sidenav-toggle">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      
+      <span class="toolbar-title">Système de Gestion de Flotte Intelligent</span>
+      
+      <span class="toolbar-spacer"></span>
+      
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="user-menu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item>
+          <mat-icon>person</mat-icon>
+          <span>Profil</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>settings</mat-icon>
+          <span>Paramètres</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item>
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Déconnexion</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <!-- Page Content -->
+    <div class="content-container">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

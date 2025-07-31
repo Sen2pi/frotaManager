@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/dashboard/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .headers(headers -> headers.frameOptions().disable());
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
         
         return http.build();
     }

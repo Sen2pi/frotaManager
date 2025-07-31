@@ -1,0 +1,69 @@
+<div class="drivers-container fade-in">
+  <!-- Header Section -->
+  <div class="drivers-header">
+    <div class="header-content">
+      <h1 class="drivers-title">Gestion des Conducteurs</h1>
+      <p class="drivers-subtitle">Gérez votre équipe de conducteurs</p>
+    </div>
+    <button mat-raised-button color="primary" class="add-button">
+      <mat-icon>person_add</mat-icon>
+      Ajouter un Conducteur
+    </button>
+  </div>
+
+  <!-- Drivers Grid -->
+  <div class="drivers-grid">
+    <mat-card class="driver-card" *ngFor="let driver of drivers" [@fadeInUp]>
+      <mat-card-header>
+        <div mat-card-avatar class="driver-avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <mat-card-title>{{ driver.name }}</mat-card-title>
+        <mat-card-subtitle>{{ driver.licenseNumber }}</mat-card-subtitle>
+        <div class="driver-status" [class]="'status-' + driver.status.toLowerCase()">
+          {{ getStatusLabel(driver.status) }}
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="driver-details">
+          <div class="detail-item">
+            <mat-icon>badge</mat-icon>
+            <span>Permis: {{ driver.licenseType }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>phone</mat-icon>
+            <span>{{ driver.phoneNumber }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>email</mat-icon>
+            <span>{{ driver.email }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>calendar_today</mat-icon>
+            <span>Embauché: {{ driver.hireDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="detail-item" *ngIf="driver.vehicleId">
+            <mat-icon>directions_car</mat-icon>
+            <span>Véhicule assigné</span>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="editDriver(driver)">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        <button mat-button color="accent" (click)="viewDetails(driver)">
+          <mat-icon>visibility</mat-icon>
+          Détails
+        </button>
+        <button mat-button color="warn" (click)="deleteDriver(driver)">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

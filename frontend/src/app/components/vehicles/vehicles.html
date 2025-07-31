@@ -1,0 +1,130 @@
+<div class="vehicles-container fade-in">
+  <!-- Header Section -->
+  <div class="vehicles-header">
+    <div class="header-content">
+      <h1 class="vehicles-title">Gestion des Véhicules</h1>
+      <p class="vehicles-subtitle">Gérez votre flotte de véhicules efficacement</p>
+    </div>
+    <button mat-raised-button color="primary" class="add-button">
+      <mat-icon>add</mat-icon>
+      Ajouter un Véhicule
+    </button>
+  </div>
+
+  <!-- Filters Section -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Rechercher</mat-label>
+          <input matInput placeholder="Marque, modèle, plaque..." [(ngModel)]="searchTerm">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Statut</mat-label>
+          <mat-select [(ngModel)]="statusFilter">
+            <mat-option value="">Tous les statuts</mat-option>
+            <mat-option value="AVAILABLE">Disponible</mat-option>
+            <mat-option value="IN_USE">En utilisation</mat-option>
+            <mat-option value="MAINTENANCE">Maintenance</mat-option>
+            <mat-option value="OUT_OF_SERVICE">Hors service</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Type de Carburant</mat-label>
+          <mat-select [(ngModel)]="fuelFilter">
+            <mat-option value="">Tous les types</mat-option>
+            <mat-option value="GASOLINE">Essence</mat-option>
+            <mat-option value="DIESEL">Diesel</mat-option>
+            <mat-option value="ELECTRIC">Électrique</mat-option>
+            <mat-option value="HYBRID">Hybride</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-stroked-button class="clear-filters">
+          <mat-icon>clear</mat-icon>
+          Effacer les Filtres
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Vehicles Grid -->
+  <div class="vehicles-grid">
+    <mat-card class="vehicle-card" *ngFor="let vehicle of filteredVehicles" [@fadeInUp]>
+      <mat-card-header>
+        <div mat-card-avatar class="vehicle-avatar">
+          <mat-icon>directions_car</mat-icon>
+        </div>
+        <mat-card-title>{{ vehicle.brand }} {{ vehicle.model }}</mat-card-title>
+        <mat-card-subtitle>{{ vehicle.licensePlate }}</mat-card-subtitle>
+        <div class="vehicle-status" [class]="'status-' + vehicle.status.toLowerCase()">
+          {{ getStatusLabel(vehicle.status) }}
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="vehicle-details">
+          <div class="detail-item">
+            <mat-icon>calendar_today</mat-icon>
+            <span>Année: {{ vehicle.year }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>local_gas_station</mat-icon>
+            <span>Carburant: {{ getFuelTypeLabel(vehicle.fuelType) }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>speed</mat-icon>
+            <span>Kilométrage: {{ vehicle.mileage }}km</span>
+          </div>
+          <div class="detail-item" *ngIf="vehicle.driverId">
+            <mat-icon>person</mat-icon>
+            <span>Conducteur: {{ getDriverName(vehicle.driverId) }}</span>
+          </div>
+        </div>
+
+        <div class="maintenance-info" *ngIf="vehicle.nextMaintenance">
+          <mat-icon>build</mat-icon>
+          <span>Prochaine maintenance: {{ vehicle.nextMaintenance | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="editVehicle(vehicle)">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        <button mat-button color="accent" (click)="viewDetails(vehicle)">
+          <mat-icon>visibility</mat-icon>
+          Détails
+        </button>
+        <button mat-button color="warn" (click)="deleteVehicle(vehicle)">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="filteredVehicles.length === 0">
+    <mat-icon class="empty-icon">directions_car</mat-icon>
+    <h3>Aucun véhicule trouvé</h3>
+    <p>Aucun véhicule ne correspond à vos critères de recherche.</p>
+    <button mat-raised-button color="primary" (click)="clearFilters()">
+      Effacer les Filtres
+    </button>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-container" *ngIf="filteredVehicles.length > 0">
+    <mat-paginator 
+      [length]="totalVehicles"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[6, 12, 24, 48]"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </div>
+</div>

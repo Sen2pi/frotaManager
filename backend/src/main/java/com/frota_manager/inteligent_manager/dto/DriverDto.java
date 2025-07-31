@@ -24,37 +24,4 @@ public record DriverDto(
     LocalDateTime updatedAt
 ) {}
 
-/**
- * DTO para criação de condutor
- */
-public record CreateDriverDto(
-    String name,
-    String identificationNumber,
-    String driverLicenseNumber,
-    LocalDate licenseExpiryDate,
-    String email,
-    String phone
-) {}
-
-/**
- * DTO para atualização de condutor
- */
-public record UpdateDriverDto(
-    String name,
-    String email,
-    String phone,
-    DriverStatus status
-) {}
-
-/**
- * DTO para resposta simplificada de condutor
- */
-public record DriverSummaryDto(
-    Long id,
-    String name,
-    String driverLicenseNumber,
-    DriverStatus status,
-    boolean isLicenseValid,
-    boolean isLicenseExpiringSoon,
-    Double rating
-) {} 
+ 

@@ -1,0 +1,63 @@
+<div class="maintenance-container fade-in">
+  <div class="maintenance-header">
+    <div class="header-content">
+      <h1 class="maintenance-title">Gestion de la Maintenance</h1>
+      <p class="maintenance-subtitle">Planifiez et suivez les maintenances de vos véhicules</p>
+    </div>
+    <button mat-raised-button color="primary" class="add-button">
+      <mat-icon>build</mat-icon>
+      Planifier Maintenance
+    </button>
+  </div>
+
+  <div class="maintenance-grid">
+    <mat-card class="maintenance-card" *ngFor="let maintenance of maintenances" [@fadeInUp]>
+      <mat-card-header>
+        <div mat-card-avatar class="maintenance-avatar">
+          <mat-icon>build</mat-icon>
+        </div>
+        <mat-card-title>{{ maintenance.description }}</mat-card-title>
+        <mat-card-subtitle>Véhicule #{{ maintenance.vehicleId }}</mat-card-subtitle>
+        <div class="maintenance-status" [class]="'status-' + maintenance.status.toLowerCase()">
+          {{ getStatusLabel(maintenance.status) }}
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="maintenance-details">
+          <div class="detail-item">
+            <mat-icon>category</mat-icon>
+            <span>Type: {{ getTypeLabel(maintenance.type) }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>euro</mat-icon>
+            <span>Coût: {{ maintenance.cost }}€</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>schedule</mat-icon>
+            <span>Planifiée: {{ maintenance.scheduledDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="detail-item" *ngIf="maintenance.mechanicName">
+            <mat-icon>person</mat-icon>
+            <span>Mécanicien: {{ maintenance.mechanicName }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="editMaintenance(maintenance)">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        <button mat-button color="accent" (click)="viewDetails(maintenance)">
+          <mat-icon>visibility</mat-icon>
+          Détails
+        </button>
+        <button mat-button color="warn" (click)="deleteMaintenance(maintenance)">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

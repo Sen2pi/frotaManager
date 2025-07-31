@@ -26,40 +26,4 @@ public record VehicleDto(
     LocalDateTime updatedAt
 ) {}
 
-/**
- * DTO para criação de veículo
- */
-public record CreateVehicleDto(
-    String brand,
-    String model,
-    String licensePlate,
-    Integer year,
-    FuelType fuelType,
-    Double fuelCapacity
-) {}
-
-/**
- * DTO para atualização de veículo
- */
-public record UpdateVehicleDto(
-    String brand,
-    String model,
-    VehicleStatus status,
-    FuelType fuelType,
-    Double fuelCapacity,
-    Double currentFuelLevel,
-    LocalDateTime nextMaintenanceDate
-) {}
-
-/**
- * DTO para resposta simplificada de veículo
- */
-public record VehicleSummaryDto(
-    Long id,
-    String brand,
-    String model,
-    String licensePlate,
-    VehicleStatus status,
-    Double fuelPercentage,
-    boolean needsMaintenance
-) {} 
+ 

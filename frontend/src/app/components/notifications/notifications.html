@@ -1,0 +1,43 @@
+<div class="notifications-container fade-in">
+  <div class="notifications-header">
+    <div class="header-content">
+      <h1 class="notifications-title">Notifications</h1>
+      <p class="notifications-subtitle">Restez informé des événements importants</p>
+    </div>
+    <button mat-raised-button color="primary" class="mark-all-read">
+      <mat-icon>done_all</mat-icon>
+      Tout Marquer comme Lu
+    </button>
+  </div>
+
+  <div class="notifications-list">
+    <mat-card class="notification-card" *ngFor="let notification of notifications" [@fadeInUp]>
+      <mat-card-content>
+        <div class="notification-content">
+          <div class="notification-icon" [class]="'icon-' + notification.type.toLowerCase()">
+            <mat-icon>{{ getIcon(notification.type) }}</mat-icon>
+          </div>
+          <div class="notification-details">
+            <h3 class="notification-title">{{ notification.title }}</h3>
+            <p class="notification-message">{{ notification.message }}</p>
+            <span class="notification-time">{{ notification.time }}</span>
+          </div>
+          <div class="notification-actions">
+            <button mat-icon-button (click)="markAsRead(notification)">
+              <mat-icon>check</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteNotification(notification)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="empty-state" *ngIf="notifications.length === 0">
+    <mat-icon class="empty-icon">notifications_off</mat-icon>
+    <h3>Aucune notification</h3>
+    <p>Vous n'avez aucune notification pour le moment.</p>
+  </div>
+</div>
