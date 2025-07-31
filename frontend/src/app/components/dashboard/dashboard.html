@@ -6,23 +6,23 @@
   </div>
 
   <!-- Loading State -->
-  <div class="loading-container" *ngIf="loading">
+  <div class="loading-container" *ngIf="loading()">
     <mat-spinner diameter="50"></mat-spinner>
     <p>Chargement des données...</p>
   </div>
 
   <!-- Error State -->
-  <div class="error-container" *ngIf="error">
+  <div class="error-container" *ngIf="error()">
     <mat-icon class="error-icon">error</mat-icon>
     <h3>Erreur de chargement</h3>
-    <p>{{ error }}</p>
+    <p>{{ error() }}</p>
     <button mat-raised-button color="primary" (click)="loadDashboardData()">
       Réessayer
     </button>
   </div>
 
   <!-- Dashboard Content -->
-  <div *ngIf="!loading && !error">
+  <div *ngIf="!loading() && !error()">
     <!-- KPI Cards -->
     <div class="kpi-grid">
       <mat-card class="kpi-card pulse">
@@ -32,7 +32,7 @@
               <mat-icon>directions_car</mat-icon>
             </div>
             <div class="kpi-info">
-              <h3 class="kpi-value">{{ totalVehicles }}</h3>
+              <h3 class="kpi-value">{{ totalVehicles() }}</h3>
               <p class="kpi-label">Véhicules Totaux</p>
             </div>
           </div>
@@ -46,7 +46,7 @@
               <mat-icon>person</mat-icon>
             </div>
             <div class="kpi-info">
-              <h3 class="kpi-value">{{ totalDrivers }}</h3>
+              <h3 class="kpi-value">{{ totalDrivers() }}</h3>
               <p class="kpi-label">Conducteurs</p>
             </div>
           </div>
@@ -60,7 +60,7 @@
               <mat-icon>build</mat-icon>
             </div>
             <div class="kpi-info">
-              <h3 class="kpi-value">{{ maintenanceCount }}</h3>
+              <h3 class="kpi-value">{{ maintenanceCount() }}</h3>
               <p class="kpi-label">Maintenances</p>
             </div>
           </div>
@@ -74,7 +74,7 @@
               <mat-icon>trending_up</mat-icon>
             </div>
             <div class="kpi-info">
-              <h3 class="kpi-value">{{ totalMileage }}km</h3>
+              <h3 class="kpi-value">{{ totalMileage() }}km</h3>
               <p class="kpi-label">Kilométrage Total</p>
             </div>
           </div>
@@ -115,7 +115,7 @@
         </mat-card-header>
         <mat-card-content>
           <div class="activity-list">
-            <div class="activity-item" *ngFor="let activity of recentActivities">
+            <div class="activity-item" *ngFor="let activity of recentActivities()">
               <div class="activity-icon">
                 <mat-icon>{{ activity.icon }}</mat-icon>
               </div>

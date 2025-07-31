@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Chart } from 'chart.js/auto';
 import { DashboardService, DashboardMetrics, DashboardAlert } from '../../services/dashboard';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,22 +29,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('fuelChart') fuelChartRef!: ElementRef;
   @ViewChild('statusChart') statusChartRef!: ElementRef;
 
+  // Signals para estado reativo
+  loading = signal(false);
+  error = signal('');
+  
   // Métricas do dashboard
-  totalVehicles = 0;
-  totalDrivers = 0;
-  maintenanceCount = 0;
-  totalMileage = 0;
-
-  // Dados para gráficos
-  fuelChartData: any[] = [];
-  statusChartData: any[] = [];
+  totalVehicles = signal(0);
+  totalDrivers = signal(0);
+  maintenanceCount = signal(0);
+  totalMileage = signal(0);
 
   // Atividades recentes
-  recentActivities: any[] = [];
-
-  // Estados de loading
-  loading = false;
-  error = '';
+  recentActivities = signal<any[]>([]);
 
   private fuelChart?: Chart;
   private statusChart?: Chart;
@@ -65,41 +63,43 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   loadDashboardData(): void {
-    this.loading = true;
-    this.error = '';
+    this.loading.set(true);
+    this.error.set('');
 
-    // Carregar métricas
-    this.dashboardService.getMetrics().subscribe({
-      next: (metrics: DashboardMetrics) => {
-        this.totalVehicles = metrics.totalVehicles;
-        this.totalDrivers = metrics.totalDrivers;
-        this.maintenanceCount = metrics.maintenanceCount;
-        this.totalMileage = metrics.totalMileage;
-        this.loading = false;
-      },
-      error: (error) => {
+    // Carregar métricas usando signals
+    this.dashboardService.getMetrics().pipe(
+      catchError(error => {
         console.error('Erro ao carregar métricas:', error);
-        this.error = 'Erreur lors du chargement des métriques';
-        this.loading = false;
+        this.error.set('Erreur lors du chargement des métriques');
+        this.loading.set(false);
         this.showSnackBar('Erreur lors du chargement des données', 'error');
+        return of(null);
+      })
+    ).subscribe(metrics => {
+      if (metrics) {
+        this.totalVehicles.set(metrics.totalVehicles);
+        this.totalDrivers.set(metrics.totalDrivers);
+        this.maintenanceCount.set(metrics.maintenanceCount);
+        this.totalMileage.set(metrics.totalMileage);
       }
+      this.loading.set(false);
     });
 
     // Carregar atividades recentes
-    this.dashboardService.getRecentActivities().subscribe({
-      next: (activities) => {
-        this.recentActivities = activities;
-      },
-      error: (error) => {
+    this.dashboardService.getRecentActivities().pipe(
+      catchError(error => {
         console.error('Erro ao carregar atividades:', error);
         // Usar dados simulados se a API não estiver disponível
         this.loadMockActivities();
-      }
+        return of([]);
+      })
+    ).subscribe(activities => {
+      this.recentActivities.set(activities);
     });
   }
 
   loadMockActivities(): void {
-    this.recentActivities = [
+    this.recentActivities.set([
       {
         icon: 'directions_car',
         title: 'Nouveau véhicule ajouté',
@@ -124,7 +124,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         description: 'Audi A4 - Huile moteur faible',
         time: 'Il y a 8 heures'
       }
-    ];
+    ]);
   }
 
   private initFuelChart(): void {
