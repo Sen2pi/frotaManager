@@ -1,4 +1,4 @@
-# 🚗 Système de Gestion de Flotte Intelligente - ALTEN
+# 🚗 Système de Gestion de Flotte Intelligente 
 
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/projects/jdk/17/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
@@ -9,7 +9,7 @@
 
 ## 📋 Description du Projet
 
-Système complet de gestion de flottes de véhicules avec surveillance en temps réel, développé pour le secteur **Automotive** où ALTEN a une forte présence. Le projet implémente toutes les fonctionnalités nécessaires pour une gestion efficace des flottes, incluant le contrôle des véhicules, conducteurs, voyages, maintenances et analytics.
+Système complet de gestion de flottes de véhicules avec surveillance en temps réel, développé pour le secteur **Automotive**  a une forte présence. Le projet implémente toutes les fonctionnalités nécessaires pour une gestion efficace des flottes, incluant le contrôle des véhicules, conducteurs, voyages, maintenances et analytics.
 
 ## 🏗️ Architecture Technique
 
@@ -186,7 +186,7 @@ spring.jpa.hibernate.ddl-auto=create-drop
 spring.jpa.show-sql=true
 
 # Sécurité
-jwt.secret=altenFleetManagementSecretKey2024
+jwt.secret=FleetManagementSecretKey2024
 jwt.expiration=86400000
 
 # Actuator
@@ -250,7 +250,7 @@ Le système charge automatiquement des données d'exemple :
 | **Matricules** | `XX-00-XX` | Format portugais |
 | **Numéros ID** | `12345678` | 8 chiffres |
 | **Licences** | `PT123456789` | Format PT + 9 chiffres |
-| **Emails** | `user@alten.com` | Format email valide |
+| **Emails** | `user@test.com` | Format email valide |
 | **Téléphones** | `912345678` | 9 chiffres |
 
 ### ✅ Sécurité
@@ -291,11 +291,11 @@ Le système charge automatiquement des données d'exemple :
 
 ## 📝 Licence
 
-Ce projet a été développé pour ALTEN comme démonstration de compétences techniques.
+Ce projet a été développé comme démonstration de compétences techniques.
 
 ## 👨‍💻 Auteur
 
-Développé avec ❤️ pour ALTEN, démontrant :
+Développé avec ❤️ démontrant :
 - ✅ Connaissance avancée de Spring Boot
 - ✅ Bonnes pratiques de développement
 - ✅ Tests unitaires et intégration
@@ -316,4 +316,4 @@ Développé avec ❤️ pour ALTEN, démontrant :
 
 **🎉 PROJET COMPLET ET FONCTIONNEL**
 
-Le système est 100% implémenté et prêt à l'utilisation, démontrant toutes les compétences techniques nécessaires pour ALTEN ! 
+Le système est 100% implémenté et prêt à l'utilisation, démontrant toutes les compétences techniques ! 
