@@ -5,6 +5,7 @@ import com.frota_manager.inteligent_manager.repository.DriverRepository;
 import com.frota_manager.inteligent_manager.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  * Utiliza CommandLineRunner para executar na inicialização da aplicação
  */
 @Component
+@Profile("!test")
 public class DataLoader implements CommandLineRunner {
     
     private final VehicleRepository vehicleRepository;

@@ -41,7 +41,7 @@ public class Vehicle {
     private String licensePlate;
     
     @NotNull(message = "O ano é obrigatório")
-    @Column(name = "year", nullable = false)
+    @Column(name = "manufacture_year", nullable = false)
     private Integer year;
     
     @Enumerated(EnumType.STRING)

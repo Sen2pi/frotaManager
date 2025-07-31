@@ -8,8 +8,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Vehicle } from '../../models/vehicle';
+import { VehicleService } from '../../services/vehicle';
 
 @Component({
   selector: 'app-vehicles',
@@ -23,7 +26,8 @@ import { Vehicle } from '../../models/vehicle';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSnackBarModule
   ],
   templateUrl: './vehicles.html',
   styleUrl: './vehicles.scss',
@@ -44,93 +48,36 @@ export class VehiclesComponent implements OnInit {
   fuelFilter = '';
   pageSize = 12;
   totalVehicles = 0;
+  loading = false;
+  error = '';
 
-  constructor() {}
+  constructor(
+    private vehicleService: VehicleService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.loadVehicles();
-    this.applyFilters();
   }
 
   loadVehicles(): void {
-    // Données simulées
-    this.vehicles = [
-      {
-        id: 1,
-        brand: 'Renault',
-        model: 'Clio',
-        licensePlate: 'AB-123-CD',
-        year: 2023,
-        fuelType: 'GASOLINE',
-        status: 'AVAILABLE',
-        mileage: 15000,
-        nextMaintenance: new Date('2024-06-15'),
-        driverId: 1
+    this.loading = true;
+    this.error = '';
+
+    this.vehicleService.getVehicles().subscribe({
+      next: (vehicles) => {
+        this.vehicles = vehicles;
+        this.totalVehicles = vehicles.length;
+        this.applyFilters();
+        this.loading = false;
       },
-      {
-        id: 2,
-        brand: 'Peugeot',
-        model: '308',
-        licensePlate: 'EF-456-GH',
-        year: 2022,
-        fuelType: 'DIESEL',
-        status: 'IN_USE',
-        mileage: 25000,
-        nextMaintenance: new Date('2024-05-20'),
-        driverId: 2
-      },
-      {
-        id: 3,
-        brand: 'BMW',
-        model: 'X3',
-        licensePlate: 'IJ-789-KL',
-        year: 2021,
-        fuelType: 'HYBRID',
-        status: 'MAINTENANCE',
-        mileage: 35000,
-        nextMaintenance: new Date('2024-04-10'),
-        driverId: 3
-      },
-      {
-        id: 4,
-        brand: 'Audi',
-        model: 'A4',
-        licensePlate: 'MN-012-OP',
-        year: 2023,
-        fuelType: 'ELECTRIC',
-        status: 'AVAILABLE',
-        mileage: 8000,
-        nextMaintenance: new Date('2024-07-01'),
-        driverId: null
-      },
-      {
-        id: 5,
-        brand: 'Volkswagen',
-        model: 'Golf',
-        licensePlate: 'QR-345-ST',
-        year: 2022,
-        fuelType: 'GASOLINE',
-        status: 'OUT_OF_SERVICE',
-        mileage: 42000,
-        nextMaintenance: new Date('2024-03-15'),
-        driverId: null
-      },
-      {
-        id: 6,
-        brand: 'Mercedes',
-        model: 'C-Class',
-        licensePlate: 'UV-678-WX',
-        year: 2023,
-        fuelType: 'DIESEL',
-        status: 'IN_USE',
-        mileage: 18000,
-        nextMaintenance: new Date('2024-06-30'),
-        driverId: 4
+      error: (error) => {
+        console.error('Erro ao carregar veículos:', error);
+        this.error = 'Erro ao carregar veículos. Tente novamente.';
+        this.loading = false;
+        this.showSnackBar('Erreur lors du chargement des véhicules', 'error');
       }
-    ];
-    
-    this.totalVehicles = this.vehicles.length;
-    this.applyFilters();
+    });
   }
 
   applyFilters(): void {
@@ -186,21 +133,41 @@ export class VehiclesComponent implements OnInit {
 
   editVehicle(vehicle: Vehicle): void {
     console.log('Modifier véhicule:', vehicle);
-    // Implémenter la logique de modification
+    this.showSnackBar('Fonctionnalité de modification en cours de développement', 'info');
   }
 
   viewDetails(vehicle: Vehicle): void {
     console.log('Voir détails:', vehicle);
-    // Implémenter la logique d'affichage des détails
+    this.showSnackBar('Fonctionnalité de détails en cours de développement', 'info');
   }
 
   deleteVehicle(vehicle: Vehicle): void {
-    console.log('Supprimer véhicule:', vehicle);
-    // Implémenter la logique de suppression
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
+      this.vehicleService.deleteVehicle(vehicle.id!).subscribe({
+        next: () => {
+          this.vehicles = this.vehicles.filter(v => v.id !== vehicle.id);
+          this.applyFilters();
+          this.showSnackBar('Véhicule supprimé avec succès', 'success');
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression:', error);
+          this.showSnackBar('Erreur lors de la suppression du véhicule', 'error');
+        }
+      });
+    }
   }
 
   onPageChange(event: PageEvent): void {
     console.log('Page changée:', event);
-    // Implémenter la logique de pagination
+    // Implementar paginação se necessário
+  }
+
+  private showSnackBar(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+    this.snackBar.open(message, 'Fermer', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      panelClass: type === 'error' ? 'error-snackbar' : type === 'success' ? 'success-snackbar' : 'info-snackbar'
+    });
   }
 }

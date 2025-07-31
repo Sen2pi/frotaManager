@@ -5,139 +5,158 @@
     <p class="dashboard-subtitle">Vue d'ensemble de votre flotte de véhicules</p>
   </div>
 
-  <!-- KPI Cards -->
-  <div class="kpi-grid">
-    <mat-card class="kpi-card pulse">
-      <mat-card-content>
-        <div class="kpi-content">
-          <div class="kpi-icon">
-            <mat-icon>directions_car</mat-icon>
-          </div>
-          <div class="kpi-info">
-            <h3 class="kpi-value">{{ totalVehicles }}</h3>
-            <p class="kpi-label">Véhicules Totaux</p>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="kpi-card pulse">
-      <mat-card-content>
-        <div class="kpi-content">
-          <div class="kpi-icon">
-            <mat-icon>person</mat-icon>
-          </div>
-          <div class="kpi-info">
-            <h3 class="kpi-value">{{ totalDrivers }}</h3>
-            <p class="kpi-label">Conducteurs</p>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="kpi-card pulse">
-      <mat-card-content>
-        <div class="kpi-content">
-          <div class="kpi-icon">
-            <mat-icon>build</mat-icon>
-          </div>
-          <div class="kpi-info">
-            <h3 class="kpi-value">{{ maintenanceCount }}</h3>
-            <p class="kpi-label">Maintenances</p>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="kpi-card pulse">
-      <mat-card-content>
-        <div class="kpi-content">
-          <div class="kpi-icon">
-            <mat-icon>trending_up</mat-icon>
-          </div>
-          <div class="kpi-info">
-            <h3 class="kpi-value">{{ totalMileage }}km</h3>
-            <p class="kpi-label">Kilométrage Total</p>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des données...</p>
   </div>
 
-  <!-- Charts Section -->
-  <div class="charts-grid">
-    <mat-card class="chart-card">
-      <mat-card-header>
-        <mat-card-title>Consommation de Carburant</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="chart-container">
-          <canvas #fuelChart></canvas>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="chart-card">
-      <mat-card-header>
-        <mat-card-title>État des Véhicules</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="chart-container">
-          <canvas #statusChart></canvas>
-        </div>
-      </mat-card-content>
-    </mat-card>
+  <!-- Error State -->
+  <div class="error-container" *ngIf="error">
+    <mat-icon class="error-icon">error</mat-icon>
+    <h3>Erreur de chargement</h3>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadDashboardData()">
+      Réessayer
+    </button>
   </div>
 
-  <!-- Recent Activity -->
-  <div class="activity-section">
-    <mat-card class="activity-card">
-      <mat-card-header>
-        <mat-card-title>Activité Récente</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="activity-list">
-          <div class="activity-item" *ngFor="let activity of recentActivities">
-            <div class="activity-icon">
-              <mat-icon>{{ activity.icon }}</mat-icon>
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !error">
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <mat-card class="kpi-card pulse">
+        <mat-card-content>
+          <div class="kpi-content">
+            <div class="kpi-icon">
+              <mat-icon>directions_car</mat-icon>
             </div>
-            <div class="activity-content">
-              <h4 class="activity-title">{{ activity.title }}</h4>
-              <p class="activity-description">{{ activity.description }}</p>
-              <span class="activity-time">{{ activity.time }}</span>
+            <div class="kpi-info">
+              <h3 class="kpi-value">{{ totalVehicles }}</h3>
+              <p class="kpi-label">Véhicules Totaux</p>
             </div>
           </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
+        </mat-card-content>
+      </mat-card>
 
-  <!-- Quick Actions -->
-  <div class="actions-section">
-    <mat-card class="actions-card">
-      <mat-card-header>
-        <mat-card-title>Actions Rapides</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="actions-grid">
-          <button mat-raised-button color="primary" class="action-button">
-            <mat-icon>add</mat-icon>
-            Ajouter un Véhicule
-          </button>
-          <button mat-raised-button color="accent" class="action-button">
-            <mat-icon>person_add</mat-icon>
-            Ajouter un Conducteur
-          </button>
-          <button mat-raised-button color="warn" class="action-button">
-            <mat-icon>build</mat-icon>
-            Planifier Maintenance
-          </button>
-          <button mat-raised-button class="action-button">
-            <mat-icon>assessment</mat-icon>
-            Générer Rapport
-          </button>
-        </div>
-      </mat-card-content>
-    </mat-card>
+      <mat-card class="kpi-card pulse">
+        <mat-card-content>
+          <div class="kpi-content">
+            <div class="kpi-icon">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div class="kpi-info">
+              <h3 class="kpi-value">{{ totalDrivers }}</h3>
+              <p class="kpi-label">Conducteurs</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card pulse">
+        <mat-card-content>
+          <div class="kpi-content">
+            <div class="kpi-icon">
+              <mat-icon>build</mat-icon>
+            </div>
+            <div class="kpi-info">
+              <h3 class="kpi-value">{{ maintenanceCount }}</h3>
+              <p class="kpi-label">Maintenances</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card pulse">
+        <mat-card-content>
+          <div class="kpi-content">
+            <div class="kpi-icon">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div class="kpi-info">
+              <h3 class="kpi-value">{{ totalMileage }}km</h3>
+              <p class="kpi-label">Kilométrage Total</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Consommation de Carburant</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <canvas #fuelChart></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>État des Véhicules</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <canvas #statusChart></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="activity-section">
+      <mat-card class="activity-card">
+        <mat-card-header>
+          <mat-card-title>Activité Récente</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="activity-list">
+            <div class="activity-item" *ngFor="let activity of recentActivities">
+              <div class="activity-icon">
+                <mat-icon>{{ activity.icon }}</mat-icon>
+              </div>
+              <div class="activity-content">
+                <h4 class="activity-title">{{ activity.title }}</h4>
+                <p class="activity-description">{{ activity.description }}</p>
+                <span class="activity-time">{{ activity.time }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-section">
+      <mat-card class="actions-card">
+        <mat-card-header>
+          <mat-card-title>Actions Rapides</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="actions-grid">
+            <button mat-raised-button color="primary" class="action-button" (click)="onQuickAction('add-vehicle')">
+              <mat-icon>add</mat-icon>
+              Ajouter un Véhicule
+            </button>
+            <button mat-raised-button color="accent" class="action-button" (click)="onQuickAction('add-driver')">
+              <mat-icon>person_add</mat-icon>
+              Ajouter un Conducteur
+            </button>
+            <button mat-raised-button color="warn" class="action-button" (click)="onQuickAction('schedule-maintenance')">
+              <mat-icon>build</mat-icon>
+              Planifier Maintenance
+            </button>
+            <button mat-raised-button class="action-button" (click)="onQuickAction('generate-report')">
+              <mat-icon>assessment</mat-icon>
+              Générer Rapport
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
 </div>
