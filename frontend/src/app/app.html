@@ -1,4 +1,4 @@
-<mat-sidenav-container class="sidenav-container">
+<mat-sidenav-container class="sidenav-container" *ngIf="isAuthenticated()">
   <!-- Sidebar Navigation -->
   <mat-sidenav #drawer class="sidenav" fixedInViewport
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
@@ -43,7 +43,7 @@
       <mat-divider></mat-divider>
       <div class="user-info">
         <mat-icon>account_circle</mat-icon>
-        <span>Administrateur</span>
+        <span>{{ (currentUser$ | async)?.name || 'Utilisateur' }}</span>
       </div>
     </div>
   </mat-sidenav>
@@ -79,7 +79,7 @@
           <span>Paramètres</span>
         </button>
         <mat-divider></mat-divider>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="onLogout()">
           <mat-icon>exit_to_app</mat-icon>
           <span>Déconnexion</span>
         </button>
@@ -92,3 +92,8 @@
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<!-- Login/Register Content -->
+<div *ngIf="!isAuthenticated()">
+  <router-outlet></router-outlet>
+</div>

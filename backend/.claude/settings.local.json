@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(./mvnw:*)",
-      "Bash(psql:*)"
+      "Bash(psql:*)",
+      "Bash(sc query:*)",
+      "Bash(where postgres)",
+      "Bash(docker:*)",
+      "Bash(wsl:*)",
+      "Bash(del docker-compose.yml start-postgres.bat)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }
