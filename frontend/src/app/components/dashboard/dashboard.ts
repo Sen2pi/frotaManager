@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Chart, ChartConfiguration } from 'chart.js';
+import { Chart } from 'chart.js/auto';
 import { DashboardService, DashboardMetrics, DashboardAlert } from '../../services/dashboard';
 
 @Component({
