@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 import { Chart } from 'chart.js/auto';
 import { DashboardService, DashboardMetrics, DashboardAlert } from '../../services/dashboard';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -48,8 +47,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   constructor(
     private dashboardService: DashboardService,
-    private snackBar: MatSnackBar,
-    private router: Router
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -207,83 +205,25 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     console.log('🎯 Dashboard - Quick action clicked:', action);
     switch (action) {
       case 'add-vehicle':
-        console.log('🎯 Dashboard - Navigating to vehicles page...');
-        this.router.navigate(['/vehicles']);
-        this.showSnackBar('Redirection vers la page des véhicules', 'info');
+        console.log('🎯 Dashboard - Adding vehicle...');
+        this.showSnackBar('Fonctionnalité d\'ajout de véhicule en cours de développement', 'info');
         break;
       case 'add-driver':
-        console.log('🎯 Dashboard - Navigating to drivers page...');
-        this.router.navigate(['/drivers']);
-        this.showSnackBar('Redirection vers la page des conducteurs', 'info');
+        console.log('🎯 Dashboard - Adding driver...');
+        this.showSnackBar('Fonctionnalité d\'ajout de conducteur en cours de développement', 'info');
         break;
       case 'schedule-maintenance':
-        console.log('🎯 Dashboard - Navigating to maintenance page...');
-        this.router.navigate(['/maintenance']);
-        this.showSnackBar('Redirection vers la page de maintenance', 'info');
+        console.log('🎯 Dashboard - Scheduling maintenance...');
+        this.showSnackBar('Fonctionnalité de planification de maintenance en cours de développement', 'info');
         break;
       case 'generate-report':
         console.log('🎯 Dashboard - Generating report...');
-        this.generateReport();
+        this.showSnackBar('Fonctionnalité de génération de rapport en cours de développement', 'info');
         break;
       default:
         console.log('🎯 Dashboard - Unknown action:', action);
         break;
     }
-  }
-
-  generateReport(): void {
-    console.log('📊 Dashboard - Generating comprehensive report...');
-    this.showSnackBar('Génération du rapport en cours...', 'info');
-    
-    // Simular geração de relatório
-    setTimeout(() => {
-      const reportData = {
-        totalVehicles: this.totalVehicles(),
-        totalDrivers: this.totalDrivers(),
-        maintenanceCount: this.maintenanceCount(),
-        totalMileage: this.totalMileage(),
-        generatedAt: new Date().toLocaleString('fr-FR'),
-        activities: this.recentActivities()
-      };
-      
-      console.log('📊 Dashboard - Report data:', reportData);
-      
-      // Criar link de download do relatório
-      const reportContent = this.formatReportContent(reportData);
-      this.downloadReport(reportContent);
-      
-      this.showSnackBar('Rapport généré avec succès!', 'success');
-    }, 2000);
-  }
-
-  private formatReportContent(data: any): string {
-    return `
-RAPPORT DE FLOTTE - ${data.generatedAt}
-
-MÉTRIQUES GÉNÉRALES:
-- Véhicules totaux: ${data.totalVehicles}
-- Conducteurs totaux: ${data.totalDrivers}
-- Maintenances en cours: ${data.maintenanceCount}
-- Kilométrage total: ${data.totalMileage} km
-
-ACTIVITÉS RÉCENTES:
-${data.activities.map((activity: any) => `- ${activity.title}: ${activity.description} (${activity.time})`).join('\n')}
-
----
-Rapport généré automatiquement par le système de gestion de flotte.
-    `.trim();
-  }
-
-  private downloadReport(content: string): void {
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `rapport-flotte-${new Date().toISOString().split('T')[0]}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
   }
 
   private showSnackBar(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
