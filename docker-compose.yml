@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database
   postgres:
@@ -34,6 +32,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fleetdb
       SPRING_DATASOURCE_USERNAME: fleetuser
       SPRING_DATASOURCE_PASSWORD: fleetpass
+      JWT_SECRET: altenFleetManagementSecretKey2024ForSecureTokenGeneration
+      JWT_EXPIRATION: 86400000
     ports:
       - "8080:8080"
     networks:

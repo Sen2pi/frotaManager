@@ -3,6 +3,7 @@ package com.frota_manager.inteligent_manager.config;
 import com.frota_manager.inteligent_manager.model.*;
 import com.frota_manager.inteligent_manager.repository.DriverRepository;
 import com.frota_manager.inteligent_manager.repository.VehicleRepository;
+import com.frota_manager.inteligent_manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -21,17 +22,61 @@ public class DataLoader implements CommandLineRunner {
     
     private final VehicleRepository vehicleRepository;
     private final DriverRepository driverRepository;
+    private final UserRepository userRepository;
     
     @Autowired
-    public DataLoader(VehicleRepository vehicleRepository, DriverRepository driverRepository) {
+    public DataLoader(VehicleRepository vehicleRepository, DriverRepository driverRepository, UserRepository userRepository) {
         this.vehicleRepository = vehicleRepository;
         this.driverRepository = driverRepository;
+        this.userRepository = userRepository;
     }
     
     @Override
     public void run(String... args) throws Exception {
-        loadVehicles();
-        loadDrivers();
+        try {
+            System.out.println("DataLoader: Iniciando carregamento de dados...");
+            loadUsers();
+            loadVehicles();
+            loadDrivers();
+            System.out.println("DataLoader: Carregamento de dados concluído com sucesso!");
+        } catch (Exception e) {
+            System.out.println("DataLoader: Erro ao carregar dados: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    
+    /**
+     * Carrega usuários de teste
+     */
+    private void loadUsers() {
+        if (userRepository.count() == 0) {
+            // Admin user
+            User admin = new User("Admin", "admin@alten.com", "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", UserRole.ADMIN);
+            admin.setEnabled(true);
+            admin.setAccountNonExpired(true);
+            admin.setAccountNonLocked(true);
+            admin.setCredentialsNonExpired(true);
+            userRepository.save(admin);
+            
+            // Manager user
+            User manager = new User("Manager", "manager@alten.com", "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", UserRole.MANAGER);
+            manager.setEnabled(true);
+            manager.setAccountNonExpired(true);
+            manager.setAccountNonLocked(true);
+            manager.setCredentialsNonExpired(true);
+            userRepository.save(manager);
+            
+            // Driver user
+            User driver = new User("Driver", "driver@alten.com", "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", UserRole.DRIVER);
+            driver.setEnabled(true);
+            driver.setAccountNonExpired(true);
+            driver.setAccountNonLocked(true);
+            driver.setCredentialsNonExpired(true);
+            userRepository.save(driver);
+            
+            System.out.println("✅ Usuários de teste carregados com sucesso!");
+        }
     }
     
     /**

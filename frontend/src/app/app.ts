@@ -33,7 +33,7 @@ import { AuthService } from './services/auth';
 export class AppComponent {
   title = 'Gestionnaire de Flotte';
   isHandset$: Observable<boolean>;
-  currentUser$ = this.authService.currentUser$;
+  currentUser$: Observable<any>;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -45,6 +45,7 @@ export class AppComponent {
         map(result => result.matches),
         shareReplay()
       );
+    this.currentUser$ = this.authService.currentUser$;
   }
 
   onLogout(): void {

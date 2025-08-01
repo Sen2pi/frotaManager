@@ -1,14 +1,20 @@
 # Maven
 target/
 !target/*.jar
-.mvn/wrapper/maven-wrapper.jar
+!target/*.war
 
 # IDE
 .idea/
-.vscode/
 *.iws
 *.iml
 *.ipr
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Logs
 *.log
@@ -21,5 +27,9 @@ target/
 Dockerfile
 .dockerignore
 
-# Environment
-.env
+# Documentation
+README.md
+*.md
+
+# Test files
+src/test/

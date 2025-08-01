@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../environments/environment';
 
 export interface AuthRequest {
   email: string;
@@ -33,12 +35,17 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-    this.loadStoredUser();
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadStoredUser();
+    }
   }
 
   /**
@@ -48,7 +55,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
       .pipe(
         tap(response => {
-          if (response.token) {
+          if (response.token && isPlatformBrowser(this.platformId)) {
             localStorage.setItem('token', response.token);
             this.setCurrentUser(response);
           }
@@ -63,7 +70,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, registerRequest)
       .pipe(
         tap(response => {
-          if (response.token) {
+          if (response.token && isPlatformBrowser(this.platformId)) {
             localStorage.setItem('token', response.token);
             this.setCurrentUser(response);
           }
@@ -136,7 +143,10 @@ export class AuthService {
    * Obtém token do localStorage
    */
   getToken(): string | null {
-    return localStorage.getItem('token');
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('token');
+    }
+    return null;
   }
 
   /**
@@ -180,7 +190,9 @@ export class AuthService {
    * Limpa dados de autenticação
    */
   private clearAuth(): void {
-    localStorage.removeItem('token');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+    }
     this.currentUserSubject.next(null);
   }
 } 

@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
@@ -22,16 +23,24 @@ import { AuthService } from '../../services/auth';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './login.html',
-  styleUrl: './login.scss'
+  styleUrl: './login.css'
 })
 export class LoginComponent {
   email = '';
   password = '';
   loading = false;
   hidePassword = true;
+
+  // Credenciais de demonstração
+  demoCredentials = [
+    { role: 'Admin', email: 'admin@alten.com', password: 'admin123', color: '#e53e3e' },
+    { role: 'Manager', email: 'manager@alten.com', password: 'manager123', color: '#3182ce' },
+    { role: 'Driver', email: 'driver@alten.com', password: 'driver123', color: '#38a169' }
+  ];
 
   constructor(
     private authService: AuthService,
@@ -61,8 +70,12 @@ export class LoginComponent {
     });
   }
 
-  onRegister(): void {
-    this.router.navigate(['/register']);
+
+
+  onDemoLogin(credential: any): void {
+    this.email = credential.email;
+    this.password = credential.password;
+    this.showSnackBar(`Credenciais de ${credential.role} preenchidas!`, 'info');
   }
 
   private showSnackBar(message: string, type: 'success' | 'error' | 'info' = 'info'): void {

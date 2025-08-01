@@ -12,6 +12,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +22,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import jakarta.annotation.PostConstruct;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +42,7 @@ public class AuthService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     
     @Autowired
+    @Lazy
     private AuthenticationManager authenticationManager;
     
     @Value("${jwt.secret}")
@@ -47,13 +51,21 @@ public class AuthService implements UserDetailsService {
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
     
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     
     /**
      * Realiza login do usuário
      */
     public AuthResponseDto login(AuthRequestDto authRequest) {
         try {
+            System.out.println("🔐 AuthService: Iniciando login para " + authRequest.email());
+            
+            // Verificar se o usuário existe
+            User user = userRepository.findByEmail(authRequest.email())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + authRequest.email()));
+            
+            System.out.println("👤 Usuário encontrado: " + user.getEmail() + " (enabled: " + user.isEnabled() + ")");
+            
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                     authRequest.email(),
@@ -61,18 +73,22 @@ public class AuthService implements UserDetailsService {
                 )
             );
             
+            System.out.println("✅ Autenticação bem-sucedida para: " + authRequest.email());
+            
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String token = generateToken(userDetails);
             
             // Atualiza último login
-            User user = userRepository.findByEmail(authRequest.email())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
             user.setLastLogin(new Date().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime());
             userRepository.save(user);
             
+            System.out.println("🎫 Token gerado com sucesso para: " + authRequest.email());
+            
             return new AuthResponseDto(token, userDetails.getUsername(), "Login realizado com sucesso");
         } catch (Exception e) {
-            throw new RuntimeException("Credenciais inválidas");
+            System.out.println("❌ Erro no login para " + authRequest.email() + ": " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Credenciais inválidas: " + e.getMessage());
         }
     }
     
@@ -113,9 +129,10 @@ public class AuthService implements UserDetailsService {
         try {
             String cleanToken = token.replace("Bearer ", "");
             Claims claims = Jwts.parser()
-                .setSigningKey(key)
-                .parseClaimsJws(cleanToken)
-                .getBody();
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(cleanToken)
+                .getPayload();
             
             String email = claims.getSubject();
             User user = userRepository.findByEmail(email)
@@ -134,9 +151,10 @@ public class AuthService implements UserDetailsService {
         try {
             String cleanToken = token.replace("Bearer ", "");
             Claims claims = Jwts.parser()
-                .setSigningKey(key)
-                .parseClaimsJws(cleanToken)
-                .getBody();
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(cleanToken)
+                .getPayload();
             
             String email = claims.getSubject();
             User user = userRepository.findByEmail(email)
