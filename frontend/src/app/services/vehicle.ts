@@ -1,54 +1,41 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Vehicle } from '../models/vehicle';
-import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VehicleService {
-  private apiUrl = `${environment.apiUrl}/vehicles`;
+
+  private apiUrl = 'http://localhost:8080/api/v1/vehicles';
 
   constructor(private http: HttpClient) { }
 
-  // Obter todos os veículos
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('access_token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
   getVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(this.apiUrl);
+    return this.http.get<Vehicle[]>(this.apiUrl, { headers: this.getAuthHeaders() });
   }
 
-  // Obter veículo por ID
   getVehicle(id: number): Observable<Vehicle> {
-    return this.http.get<Vehicle>(`${this.apiUrl}/${id}`);
+    return this.http.get<Vehicle>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
-  // Obter veículos disponíveis
-  getAvailableVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(`${this.apiUrl}/available`);
+  createVehicle(vehicle: Omit<Vehicle, 'id'>): Observable<Vehicle> {
+    return this.http.post<Vehicle>(this.apiUrl, vehicle, { headers: this.getAuthHeaders() });
   }
 
-  // Obter veículos que precisam de manutenção
-  getVehiclesNeedingMaintenance(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(`${this.apiUrl}/needing-maintenance`);
+  updateVehicle(id: number, vehicle: Partial<Vehicle>): Observable<Vehicle> {
+    return this.http.put<Vehicle>(`${this.apiUrl}/${id}`, vehicle, { headers: this.getAuthHeaders() });
   }
 
-  // Obter veículos com combustível baixo
-  getVehiclesWithLowFuel(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(`${this.apiUrl}/low-fuel`);
-  }
-
-  // Criar novo veículo
-  createVehicle(vehicle: Vehicle): Observable<Vehicle> {
-    return this.http.post<Vehicle>(this.apiUrl, vehicle);
-  }
-
-  // Atualizar veículo
-  updateVehicle(id: number, vehicle: Vehicle): Observable<Vehicle> {
-    return this.http.put<Vehicle>(`${this.apiUrl}/${id}`, vehicle);
-  }
-
-  // Deletar veículo
   deleteVehicle(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 }

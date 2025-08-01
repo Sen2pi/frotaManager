@@ -1,0 +1,96 @@
+<div class="report-container">
+  <div class="report-header no-print">
+    <h1 class="report-title">Rapport de la Flotte</h1>
+    <button mat-raised-button color="primary" (click)="printReport()">
+      <mat-icon>print</mat-icon>
+      Imprimer le Rapport
+    </button>
+  </div>
+
+  <div *ngIf="loading()" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Génération du rapport...</p>
+  </div>
+
+  <div *ngIf="error()" class="error-container">
+    <mat-icon>error</mat-icon>
+    <h3>{{ error() }}</h3>
+  </div>
+
+  <div *ngIf="reportData()" class="report-content">
+    <div class="summary-cards">
+      <mat-card class="summary-card">
+        <mat-card-header>
+          <mat-card-title>Véhicules</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="summary-value">{{ reportData().totalVehicles }}</p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="summary-card">
+        <mat-card-header>
+          <mat-card-title>Conducteurs</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="summary-value">{{ reportData().totalDrivers }}</p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="summary-card">
+        <mat-card-header>
+          <mat-card-title>Maintenances</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="summary-value">{{ reportData().totalMaintenances }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <mat-card class="details-section">
+      <mat-card-header>
+        <mat-card-title>Détails des Véhicules</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table>
+          <thead>
+            <tr>
+              <th>Marque</th>
+              <th>Modèle</th>
+              <th>Plaque</th>
+              <th>Année</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let vehicle of reportData().vehicles">
+              <td>{{ vehicle.brand }}</td>
+              <td>{{ vehicle.model }}</td>
+              <td>{{ vehicle.licensePlate }}</td>
+              <td>{{ vehicle.year }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="details-section">
+      <mat-card-header>
+        <mat-card-title>Détails des Conducteurs</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table>
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>N° de Permis</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let driver of reportData().drivers">
+              <td>{{ driver.name }}</td>
+              <td>{{ driver.licenseNumber }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

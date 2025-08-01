@@ -1,49 +1,41 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Driver } from '../models/driver';
-import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DriverService {
-  private apiUrl = `${environment.apiUrl}/drivers`;
+
+  private apiUrl = 'http://localhost:8080/api/v1/drivers';
 
   constructor(private http: HttpClient) { }
 
-  // Obter todos os condutores
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('access_token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
   getDrivers(): Observable<Driver[]> {
-    return this.http.get<Driver[]>(this.apiUrl);
+    return this.http.get<Driver[]>(this.apiUrl, { headers: this.getAuthHeaders() });
   }
 
-  // Obter condutor por ID
   getDriver(id: number): Observable<Driver> {
-    return this.http.get<Driver>(`${this.apiUrl}/${id}`);
+    return this.http.get<Driver>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
-  // Obter condutores ativos
-  getActiveDrivers(): Observable<Driver[]> {
-    return this.http.get<Driver[]>(`${this.apiUrl}/active`);
+  createDriver(driver: Omit<Driver, 'id'>): Observable<Driver> {
+    return this.http.post<Driver>(this.apiUrl, driver, { headers: this.getAuthHeaders() });
   }
 
-  // Obter condutores com licença expirando
-  getDriversWithExpiringLicense(): Observable<Driver[]> {
-    return this.http.get<Driver[]>(`${this.apiUrl}/expiring-license`);
+  updateDriver(id: number, driver: Partial<Driver>): Observable<Driver> {
+    return this.http.put<Driver>(`${this.apiUrl}/${id}`, driver, { headers: this.getAuthHeaders() });
   }
 
-  // Criar novo condutor
-  createDriver(driver: Driver): Observable<Driver> {
-    return this.http.post<Driver>(this.apiUrl, driver);
-  }
-
-  // Atualizar condutor
-  updateDriver(id: number, driver: Driver): Observable<Driver> {
-    return this.http.put<Driver>(`${this.apiUrl}/${id}`, driver);
-  }
-
-  // Deletar condutor
   deleteDriver(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 }

@@ -1,60 +1,47 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { trigger, transition, style, animate } from '@angular/animations';
-import { Vehicle } from '../../models/vehicle';
 import { VehicleService } from '../../services/vehicle';
+import { Vehicle } from '../../models/vehicle';
+import { VehicleDialogComponent } from './vehicle-dialog.component';
 
 @Component({
   selector: 'app-vehicles',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    MatCardModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatPaginatorModule,
-    MatSnackBarModule
+    MatDialogModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './vehicles.html',
-  styleUrl: './vehicles.scss',
-  animations: [
-    trigger('fadeInUp', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(30px)' }),
-        animate('0.6s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ]
+  styleUrls: ['./vehicles.scss']
 })
 export class VehiclesComponent implements OnInit {
+  displayedColumns: string[] = ['id', 'brand', 'model', 'licensePlate', 'year', 'actions'];
+  dataSource!: MatTableDataSource<Vehicle>;
   vehicles: Vehicle[] = [];
-  filteredVehicles: Vehicle[] = [];
-  searchTerm = '';
-  statusFilter = '';
-  fuelFilter = '';
-  pageSize = 12;
-  totalVehicles = 0;
   loading = false;
-  error = '';
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private vehicleService: VehicleService,
+    private dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadVehicles();
@@ -62,112 +49,47 @@ export class VehiclesComponent implements OnInit {
 
   loadVehicles(): void {
     this.loading = true;
-    this.error = '';
-
     this.vehicleService.getVehicles().subscribe({
       next: (vehicles) => {
         this.vehicles = vehicles;
-        this.totalVehicles = vehicles.length;
-        this.applyFilters();
+        this.dataSource = new MatTableDataSource(this.vehicles);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erro ao carregar veículos:', error);
-        this.error = 'Erro ao carregar veículos. Tente novamente.';
+        console.error('Error loading vehicles:', error);
+        this.snackBar.open('Error loading vehicles', 'Close', { duration: 3000 });
         this.loading = false;
-        this.showSnackBar('Erreur lors du chargement des véhicules', 'error');
       }
     });
   }
 
-  applyFilters(): void {
-    this.filteredVehicles = this.vehicles.filter(vehicle => {
-      const matchesSearch = !this.searchTerm || 
-        vehicle.brand.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        vehicle.model.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        vehicle.licensePlate.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
-      const matchesStatus = !this.statusFilter || vehicle.status === this.statusFilter;
-      const matchesFuel = !this.fuelFilter || vehicle.fuelType === this.fuelFilter;
-      
-      return matchesSearch && matchesStatus && matchesFuel;
+  openVehicleDialog(vehicle?: Vehicle): void {
+    const dialogRef = this.dialog.open(VehicleDialogComponent, {
+      width: '500px',
+      data: { vehicle: vehicle }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadVehicles();
+      }
     });
   }
 
-  clearFilters(): void {
-    this.searchTerm = '';
-    this.statusFilter = '';
-    this.fuelFilter = '';
-    this.applyFilters();
-  }
-
-  getStatusLabel(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      'AVAILABLE': 'Disponible',
-      'IN_USE': 'En utilisation',
-      'MAINTENANCE': 'Maintenance',
-      'OUT_OF_SERVICE': 'Hors service'
-    };
-    return statusMap[status] || status;
-  }
-
-  getFuelTypeLabel(fuelType: string): string {
-    const fuelMap: { [key: string]: string } = {
-      'GASOLINE': 'Essence',
-      'DIESEL': 'Diesel',
-      'ELECTRIC': 'Électrique',
-      'HYBRID': 'Hybride'
-    };
-    return fuelMap[fuelType] || fuelType;
-  }
-
-  getDriverName(driverId: number): string {
-    const drivers: { [key: number]: string } = {
-      1: 'Jean Dupont',
-      2: 'Marie Martin',
-      3: 'Pierre Durand',
-      4: 'Sophie Bernard'
-    };
-    return drivers[driverId] || 'Non assigné';
-  }
-
-  editVehicle(vehicle: Vehicle): void {
-    console.log('Modifier véhicule:', vehicle);
-    this.showSnackBar('Fonctionnalité de modification en cours de développement', 'info');
-  }
-
-  viewDetails(vehicle: Vehicle): void {
-    console.log('Voir détails:', vehicle);
-    this.showSnackBar('Fonctionnalité de détails en cours de développement', 'info');
-  }
-
-  deleteVehicle(vehicle: Vehicle): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
-      this.vehicleService.deleteVehicle(vehicle.id!).subscribe({
+  deleteVehicle(id: number): void {
+    if (confirm('Are you sure you want to delete this vehicle?')) {
+      this.vehicleService.deleteVehicle(id).subscribe({
         next: () => {
-          this.vehicles = this.vehicles.filter(v => v.id !== vehicle.id);
-          this.applyFilters();
-          this.showSnackBar('Véhicule supprimé avec succès', 'success');
+          this.loadVehicles();
+          this.snackBar.open('Vehicle deleted successfully', 'Close', { duration: 3000 });
         },
         error: (error) => {
-          console.error('Erreur lors de la suppression:', error);
-          this.showSnackBar('Erreur lors de la suppression du véhicule', 'error');
+          console.error('Error deleting vehicle:', error);
+          this.snackBar.open('Error deleting vehicle', 'Close', { duration: 3000 });
         }
       });
     }
-  }
-
-  onPageChange(event: PageEvent): void {
-    console.log('Page changée:', event);
-    // Implementar paginação se necessário
-  }
-
-  private showSnackBar(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
-    this.snackBar.open(message, 'Fermer', {
-      duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      panelClass: type === 'error' ? 'error-snackbar' : type === 'success' ? 'success-snackbar' : 'info-snackbar'
-    });
   }
 }

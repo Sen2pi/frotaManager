@@ -31,7 +31,8 @@ import { VehicleService } from '../../services/vehicle';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatIconModule
   ],
   templateUrl: './maintenance.html',
   styleUrl: './maintenance.scss',
@@ -242,97 +243,171 @@ export class MaintenanceComponent implements OnInit {
     MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatIconModule
   ],
   template: `
-    <h2 mat-dialog-title>{{ data.isEdit ? 'Modifier' : 'Créer' }} une Maintenance</h2>
-    <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()">
-      <mat-dialog-content>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Véhicule</mat-label>
-            <mat-select formControlName="vehicleId" required>
-              <mat-option *ngFor="let vehicle of data.vehicles" [value]="vehicle.id">
-                {{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.licensePlate }})
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Type de maintenance</mat-label>
-            <mat-select formControlName="type" required>
-              <mat-option value="PREVENTIVE">Préventive</mat-option>
-              <mat-option value="CORRECTIVE">Corrective</mat-option>
-              <mat-option value="INSPECTION">Inspection</mat-option>
-              <mat-option value="REPAIR">Réparation</mat-option>
-              <mat-option value="REPLACEMENT">Remplacement</mat-option>
-              <mat-option value="EMERGENCY">Urgence</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
+    <div class="dialog-container">
+      <h2 mat-dialog-title class="dialog-title">
+        <mat-icon>{{ data.isEdit ? 'edit' : 'add' }}</mat-icon>
+        {{ data.isEdit ? 'Modifier' : 'Planifier' }} une Maintenance
+      </h2>
+      <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()">
+        <mat-dialog-content class="dialog-content">
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Véhicule</mat-label>
+              <mat-select formControlName="vehicleId" required>
+                <mat-option *ngFor="let vehicle of data.vehicles" [value]="vehicle.id">
+                  {{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.licensePlate }})
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>directions_car</mat-icon>
+              <mat-error *ngIf="maintenanceForm.get('vehicleId')?.hasError('required')">
+                Le véhicule est requis.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Type de maintenance</mat-label>
+              <mat-select formControlName="type" required>
+                <mat-option value="PREVENTIVE">Préventive</mat-option>
+                <mat-option value="CORRECTIVE">Corrective</mat-option>
+                <mat-option value="INSPECTION">Inspection</mat-option>
+                <mat-option value="REPAIR">Réparation</mat-option>
+                <mat-option value="REPLACEMENT">Remplacement</mat-option>
+                <mat-option value="EMERGENCY">Urgence</mat-option>
+              </mat-select>
+              <mat-icon matPrefix>build</mat-icon>
+              <mat-error *ngIf="maintenanceForm.get('type')?.hasError('required')">
+                Le type est requis.
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width-field">
             <mat-label>Description</mat-label>
-            <mat-input formControlName="description" required></mat-input>
+            <input matInput formControlName="description" required>
+            <mat-icon matPrefix>description</mat-icon>
+            <mat-error *ngIf="maintenanceForm.get('description')?.hasError('required')">
+              La description est requise.
+            </mat-error>
           </mat-form-field>
-        </div>
-        
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Date planifiée</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="scheduledDate" required>
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
-          
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Coût estimé (€)</mat-label>
-            <mat-input type="number" formControlName="estimatedCost"></mat-input>
-          </mat-form-field>
-        </div>
-        
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Atelier</mat-label>
-            <mat-input formControlName="workshopName"></mat-input>
-          </mat-form-field>
-          
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Technicien</mat-label>
-            <mat-input formControlName="technicianName"></mat-input>
-          </mat-form-field>
-        </div>
-        
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Date planifiée</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="scheduledDate" required>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-icon matPrefix>event</mat-icon>
+              <mat-error *ngIf="maintenanceForm.get('scheduledDate')?.hasError('required')">
+                La date est requise.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Coût estimé (€)</mat-label>
+              <input type="number" matInput formControlName="estimatedCost" placeholder="0.00">
+              <mat-icon matPrefix>euro</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Atelier</mat-label>
+              <input matInput formControlName="workshopName">
+              <mat-icon matPrefix>store</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Technicien</mat-label>
+              <input matInput formControlName="technicianName">
+              <mat-icon matPrefix>person</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width-field">
             <mat-label>Notes</mat-label>
             <textarea matInput formControlName="notes" rows="3"></textarea>
+            <mat-icon matPrefix>notes</mat-icon>
           </mat-form-field>
-        </div>
-      </mat-dialog-content>
-      
-      <mat-dialog-actions align="end">
-        <button mat-button type="button" (click)="onCancel()">Annuler</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="!maintenanceForm.valid">
-          {{ data.isEdit ? 'Modifier' : 'Créer' }}
-        </button>
-      </mat-dialog-actions>
-    </form>
+
+        </mat-dialog-content>
+
+        <mat-dialog-actions align="end" class="dialog-actions">
+          <button mat-stroked-button type="button" (click)="onCancel()">Annuler</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="!maintenanceForm.valid">
+            <mat-icon>{{ data.isEdit ? 'save' : 'add' }}</mat-icon>
+            {{ data.isEdit ? 'Enregistrer' : 'Créer' }}
+          </button>
+        </mat-dialog-actions>
+      </form>
+    </div>
   `,
   styles: [`
-    .form-row {
+    .dialog-container {
       display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
+      flex-direction: column;
+      height: 100%;
     }
-    .full-width {
+    .dialog-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: #3f51b5; /* Indigo */
+      border-bottom: 2px solid #3f51b5;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .dialog-content {
+      padding-top: 10px;
+      flex-grow: 1;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 10px;
+    }
+    .form-field, .full-width-field {
       width: 100%;
     }
-    .half-width {
-      width: calc(50% - 8px);
+    .full-width-field {
+      grid-column: 1 / -1;
+      margin-bottom: 10px;
+    }
+    mat-form-field {
+      font-size: 1rem;
+    }
+    mat-icon[matPrefix] {
+      margin-right: 10px;
+      color: #666;
+    }
+    .dialog-actions {
+      padding: 16px 24px;
+      border-top: 1px solid #eee;
+      background-color: #f9f9f9;
+      margin: 0 -24px -24px -24px;
+    }
+    button[mat-stroked-button] {
+      border-radius: 20px;
+      padding: 8px 24px;
+    }
+    button[mat-raised-button] {
+      border-radius: 20px;
+      padding: 8px 24px;
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+    @media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
     }
   `]
 })

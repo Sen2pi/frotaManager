@@ -6,10 +6,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { Chart } from 'chart.js/auto';
 import { DashboardService, DashboardMetrics, DashboardAlert } from '../../services/dashboard';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
+import { Router } from '@angular/router';
+import { VehicleDialogComponent } from '../vehicles/vehicle-dialog.component';
+import { DriverDialogComponent } from '../drivers/driver-dialog.component';
+import { MaintenanceDialogComponent } from '../maintenance/maintenance';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,7 +52,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   constructor(
     private dashboardService: DashboardService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -202,26 +209,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   onQuickAction(action: string): void {
-    console.log('🎯 Dashboard - Quick action clicked:', action);
     switch (action) {
       case 'add-vehicle':
-        console.log('🎯 Dashboard - Adding vehicle...');
-        this.showSnackBar('Fonctionnalité d\'ajout de véhicule en cours de développement', 'info');
+        this.dialog.open(VehicleDialogComponent, { width: '500px' });
         break;
       case 'add-driver':
-        console.log('🎯 Dashboard - Adding driver...');
-        this.showSnackBar('Fonctionnalité d\'ajout de conducteur en cours de développement', 'info');
+        this.dialog.open(DriverDialogComponent, { width: '500px' });
         break;
       case 'schedule-maintenance':
-        console.log('🎯 Dashboard - Scheduling maintenance...');
-        this.showSnackBar('Fonctionnalité de planification de maintenance en cours de développement', 'info');
+        this.dialog.open(MaintenanceDialogComponent, { width: '600px' });
         break;
       case 'generate-report':
-        console.log('🎯 Dashboard - Generating report...');
-        this.showSnackBar('Fonctionnalité de génération de rapport en cours de développement', 'info');
-        break;
-      default:
-        console.log('🎯 Dashboard - Unknown action:', action);
+        this.router.navigate(['/report']);
         break;
     }
   }

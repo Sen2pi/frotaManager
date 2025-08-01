@@ -9,319 +9,50 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.header-content {
-  flex: 1;
 }
 
 .vehicles-title {
   font-size: 2.5rem;
   font-weight: 700;
   color: #333;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
-.vehicles-subtitle {
-  font-size: 1.1rem;
-  color: #666;
-  font-weight: 400;
-}
-
-.add-button {
-  height: 48px;
-  border-radius: 24px !important;
-  font-weight: 500 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  transition: all 0.3s ease !important;
-  
-  mat-icon {
-    margin-right: 8px;
-  }
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
-  }
-}
-
-/* Filters Section */
-.filters-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  margin-bottom: 32px;
-  animation: slideInLeft 0.8s ease-out;
-}
-
-.filters-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  align-items: end;
-}
-
-.filter-field {
-  width: 100%;
-}
-
-.clear-filters {
-  height: 56px;
-  border-radius: 12px !important;
-  font-weight: 500 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  transition: all 0.3s ease !important;
-  
-  mat-icon {
-    margin-right: 8px;
-  }
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-  }
-}
-
-/* Vehicles Grid */
-.vehicles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.vehicle-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  overflow: hidden;
-  
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
-  }
-}
-
-.vehicle-avatar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.loading-container, .no-data-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  
-  mat-icon {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
-  }
+  padding: 48px;
+  color: #666;
 }
 
-.vehicle-status {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  
-  &.status-available {
-    background: rgba(76, 175, 80, 0.1);
-    color: #4CAF50;
-  }
-  
-  &.status-in_use {
-    background: rgba(33, 150, 243, 0.1);
-    color: #2196F3;
-  }
-  
-  &.status-maintenance {
-    background: rgba(255, 152, 0, 0.1);
-    color: #FF9800;
-  }
-  
-  &.status-out_of_service {
-    background: rgba(244, 67, 54, 0.1);
-    color: #F44336;
-  }
-}
-
-.vehicle-details {
-  margin: 16px 0;
-}
-
-.detail-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  
-  mat-icon {
-    margin-right: 12px;
-    color: #667eea;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-  
-  span {
-    font-size: 0.9rem;
-    color: #666;
-  }
-}
-
-.maintenance-info {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  background: rgba(255, 152, 0, 0.1);
-  border-radius: 8px;
-  margin-top: 16px;
-  
-  mat-icon {
-    margin-right: 8px;
-    color: #FF9800;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-  
-  span {
-    font-size: 0.8rem;
-    color: #FF9800;
-    font-weight: 500;
-  }
-}
-
-mat-card-actions {
-  padding: 16px;
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  
-  button {
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    transition: all 0.3s ease !important;
-    
-    mat-icon {
-      margin-right: 4px;
-    }
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
-    }
-  }
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 64px 24px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.empty-icon {
+.no-data-icon {
   font-size: 64px;
   width: 64px;
   height: 64px;
-  color: #ccc;
   margin-bottom: 16px;
 }
 
-.empty-state h3 {
-  font-size: 1.5rem;
-  color: #333;
-  margin-bottom: 8px;
+.table-container {
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.empty-state p {
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 24px;
-}
-
-/* Pagination */
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 32px;
-  
-  mat-paginator {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .vehicles-container {
-    padding: 16px;
-  }
-  
-  .vehicles-header {
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
-  }
-  
-  .vehicles-title {
-    font-size: 2rem;
-  }
-  
-  .filters-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .vehicles-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
-  .add-button {
-    width: 100%;
-  }
-}
-
-/* Animation Delays */
-.vehicle-card:nth-child(1) { animation-delay: 0.1s; }
-.vehicle-card:nth-child(2) { animation-delay: 0.2s; }
-.vehicle-card:nth-child(3) { animation-delay: 0.3s; }
-.vehicle-card:nth-child(4) { animation-delay: 0.4s; }
-.vehicle-card:nth-child(5) { animation-delay: 0.5s; }
-.vehicle-card:nth-child(6) { animation-delay: 0.6s; }
-
-/* Custom Material Overrides */
-.mat-mdc-form-field {
+.mat-table {
   width: 100%;
 }
 
-.mat-mdc-card-header {
-  padding: 16px 16px 0 16px;
+.mat-header-cell {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
 }
 
-.mat-mdc-card-content {
-  padding: 16px;
+.mat-cell {
+  font-size: 14px;
 }
 
-.mat-mdc-card-actions {
-  padding: 0 16px 16px 16px;
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
 }

@@ -48,6 +48,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'report',
+    loadComponent: () => import('./components/report/report.component').then(m => m.ReportComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }
