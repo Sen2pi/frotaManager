@@ -25,13 +25,16 @@ import { VehicleService } from '../../services/vehicle';
     MatButtonModule, 
     MatIconModule,
     MatDialogModule,
+    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatChipsModule,
+    MatDividerModule
   ],
   templateUrl: './maintenance.html',
   styleUrl: './maintenance.scss',

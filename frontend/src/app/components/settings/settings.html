@@ -1,0 +1,321 @@
+<div class="settings-container">
+  <!-- Header -->
+  <div class="settings-header">
+    <div class="header-content">
+      <div class="header-info">
+        <h1 class="header-title">
+          <mat-icon class="header-icon">settings</mat-icon>
+          Paramètres du Système
+        </h1>
+        <p class="header-subtitle">Configurez les paramètres de votre système de gestion de flotte</p>
+      </div>
+      <div class="header-actions">
+        <button mat-raised-button color="warn" (click)="onResetSettings()">
+          <mat-icon>restore</mat-icon>
+          Réinitialiser
+        </button>
+        <button mat-raised-button color="accent" (click)="onExportSettings()">
+          <mat-icon>download</mat-icon>
+          Exporter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Content -->
+  <div class="settings-content">
+    <div class="settings-grid">
+      
+      <!-- General Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="card-icon">business</mat-icon>
+            Paramètres Généraux
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="generalForm" (ngSubmit)="onSaveGeneral()">
+            <div class="form-grid">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Nom de l'entreprise</mat-label>
+                <input matInput formControlName="companyName" placeholder="Nom de votre entreprise">
+                <mat-error *ngIf="generalForm.get('companyName')?.hasError('required')">
+                  Le nom de l'entreprise est requis
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Langue</mat-label>
+                <mat-select formControlName="language">
+                  <mat-option *ngFor="let lang of languages" [value]="lang.code">
+                    {{ lang.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="generalForm.get('language')?.hasError('required')">
+                  La langue est requise
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Fuseau horaire</mat-label>
+                <mat-select formControlName="timezone">
+                  <mat-option *ngFor="let tz of timezones" [value]="tz.value">
+                    {{ tz.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="generalForm.get('timezone')?.hasError('required')">
+                  Le fuseau horaire est requis
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Format de date</mat-label>
+                <input matInput formControlName="dateFormat" placeholder="dd/MM/yyyy">
+                <mat-error *ngIf="generalForm.get('dateFormat')?.hasError('required')">
+                  Le format de date est requis
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Devise</mat-label>
+                <mat-select formControlName="currency">
+                  <mat-option *ngFor="let curr of currencies" [value]="curr.code">
+                    {{ curr.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="generalForm.get('currency')?.hasError('required')">
+                  La devise est requise
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" type="submit" [disabled]="!generalForm.valid || saving">
+                <mat-spinner diameter="20" *ngIf="saving"></mat-spinner>
+                <span *ngIf="!saving">Sauvegarder</span>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Notification Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="card-icon">notifications</mat-icon>
+            Paramètres de Notifications
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="notificationForm" (ngSubmit)="onSaveNotifications()">
+            <div class="toggle-section">
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Notifications par email</span>
+                  <span class="toggle-description">Recevoir les alertes par email</span>
+                </div>
+                <mat-slide-toggle formControlName="emailNotifications" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Notifications SMS</span>
+                  <span class="toggle-description">Recevoir les alertes par SMS</span>
+                </div>
+                <mat-slide-toggle formControlName="smsNotifications" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Notifications push</span>
+                  <span class="toggle-description">Recevoir les notifications push</span>
+                </div>
+                <mat-slide-toggle formControlName="pushNotifications" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Alertes de maintenance</span>
+                  <span class="toggle-description">Notifications pour la maintenance</span>
+                </div>
+                <mat-slide-toggle formControlName="maintenanceAlerts" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Alertes de carburant</span>
+                  <span class="toggle-description">Notifications de niveau de carburant</span>
+                </div>
+                <mat-slide-toggle formControlName="fuelAlerts" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Alertes conducteur</span>
+                  <span class="toggle-description">Notifications liées aux conducteurs</span>
+                </div>
+                <mat-slide-toggle formControlName="driverAlerts" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <mat-divider class="divider"></mat-divider>
+
+            <div class="slider-section">
+              <label class="slider-label">Fréquence des alertes (minutes)</label>
+              <mat-slider formControlName="alertFrequency" min="5" max="60" step="5" class="frequency-slider">
+                <input matSliderThumb>
+              </mat-slider>
+              <span class="slider-value">{{ notificationForm.get('alertFrequency')?.value }} minutes</span>
+            </div>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" type="submit" [disabled]="!notificationForm.valid || saving">
+                <mat-spinner diameter="20" *ngIf="saving"></mat-spinner>
+                <span *ngIf="!saving">Sauvegarder</span>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Maintenance Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="card-icon">build</mat-icon>
+            Paramètres de Maintenance
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="maintenanceForm" (ngSubmit)="onSaveMaintenance()">
+            <div class="toggle-section">
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Rappels automatiques</span>
+                  <span class="toggle-description">Rappels automatiques de maintenance</span>
+                </div>
+                <mat-slide-toggle formControlName="autoMaintenanceReminders" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Rappels d'inspection</span>
+                  <span class="toggle-description">Rappels pour les inspections</span>
+                </div>
+                <mat-slide-toggle formControlName="inspectionReminders" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Historique des services</span>
+                  <span class="toggle-description">Conserver l'historique des services</span>
+                </div>
+                <mat-slide-toggle formControlName="serviceHistory" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <mat-divider class="divider"></mat-divider>
+
+            <div class="slider-section">
+              <label class="slider-label">Intervalle de maintenance (jours)</label>
+              <mat-slider formControlName="maintenanceInterval" min="30" max="365" step="15" class="interval-slider">
+                <input matSliderThumb>
+              </mat-slider>
+              <span class="slider-value">{{ maintenanceForm.get('maintenanceInterval')?.value }} jours</span>
+            </div>
+
+            <div class="slider-section">
+              <label class="slider-label">Seuil de carburant (%)</label>
+              <mat-slider formControlName="fuelThreshold" min="5" max="50" step="5" class="fuel-slider">
+                <input matSliderThumb>
+              </mat-slider>
+              <span class="slider-value">{{ maintenanceForm.get('fuelThreshold')?.value }}%</span>
+            </div>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" type="submit" [disabled]="!maintenanceForm.valid || saving">
+                <mat-spinner diameter="20" *ngIf="saving"></mat-spinner>
+                <span *ngIf="!saving">Sauvegarder</span>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Security Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="card-icon">security</mat-icon>
+            Paramètres de Sécurité
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="securityForm" (ngSubmit)="onSaveSecurity()">
+            <div class="toggle-section">
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Changement de mot de passe obligatoire</span>
+                  <span class="toggle-description">Forcer le changement de mot de passe</span>
+                </div>
+                <mat-slide-toggle formControlName="requirePasswordChange" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Authentification à deux facteurs</span>
+                  <span class="toggle-description">Sécurité renforcée avec 2FA</span>
+                </div>
+                <mat-slide-toggle formControlName="twoFactorAuth" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <mat-divider class="divider"></mat-divider>
+
+            <div class="slider-section">
+              <label class="slider-label">Délai d'expiration de session (minutes)</label>
+              <mat-slider formControlName="sessionTimeout" min="5" max="120" step="5" class="timeout-slider">
+                <input matSliderThumb>
+              </mat-slider>
+              <span class="slider-value">{{ securityForm.get('sessionTimeout')?.value }} minutes</span>
+            </div>
+
+            <div class="slider-section">
+              <label class="slider-label">Tentatives de connexion maximales</label>
+              <mat-slider formControlName="loginAttempts" min="1" max="10" step="1" class="attempts-slider">
+                <input matSliderThumb>
+              </mat-slider>
+              <span class="slider-value">{{ securityForm.get('loginAttempts')?.value }} tentatives</span>
+            </div>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Complexité du mot de passe</mat-label>
+              <mat-select formControlName="passwordComplexity">
+                <mat-option value="low">Faible</mat-option>
+                <mat-option value="medium">Moyenne</mat-option>
+                <mat-option value="high">Élevée</mat-option>
+              </mat-select>
+              <mat-error *ngIf="securityForm.get('passwordComplexity')?.hasError('required')">
+                La complexité est requise
+              </mat-error>
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" type="submit" [disabled]="!securityForm.valid || saving">
+                <mat-spinner diameter="20" *ngIf="saving"></mat-spinner>
+                <span *ngIf="!saving">Sauvegarder</span>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  </div>
+</div> 

@@ -47,10 +47,21 @@
   margin: 8px 16px;
   border-radius: 12px;
   transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
   
   &:hover {
     background: rgba(102, 126, 234, 0.1);
     transform: translateX(8px);
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 }
 
@@ -121,6 +132,16 @@
 
 .user-menu {
   color: #667eea;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.mat-menu-panel {
+  z-index: 10000 !important;
+}
+
+.mat-menu-item {
+  cursor: pointer !important;
 }
 
 .content-container {

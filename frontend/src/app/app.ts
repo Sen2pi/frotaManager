@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router } from '@angular/router';
+import { RouterOutlet, Router, RouterModule } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,6 +19,7 @@ import { AuthService } from './services/auth';
   imports: [
     CommonModule,
     RouterOutlet,
+    RouterModule,
     MatSidenavModule,
     MatToolbarModule,
     MatButtonModule,
@@ -40,6 +41,7 @@ export class AppComponent {
     private authService: AuthService,
     private router: Router
   ) {
+    console.log('🚀 AppComponent - Constructor initialized');
     this.isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset)
       .pipe(
         map(result => result.matches),
@@ -49,18 +51,27 @@ export class AppComponent {
   }
 
   onLogout(): void {
+    console.log('🚪 AppComponent - Logout initiated');
     this.authService.logout().subscribe({
       next: () => {
+        console.log('🚪 AppComponent - Logout successful, navigating to login');
         this.router.navigate(['/login']);
       },
       error: (error) => {
-        console.error('Erro no logout:', error);
+        console.error('🚪 AppComponent - Logout error:', error);
         this.router.navigate(['/login']);
       }
     });
   }
 
+  onNavigate(route: string): void {
+    console.log('🧭 AppComponent - Navigating to:', route);
+    this.router.navigate([route]);
+  }
+
   isAuthenticated(): boolean {
-    return this.authService.isAuthenticated();
+    const isAuth = this.authService.isAuthenticated();
+    console.log('🔐 AppComponent - isAuthenticated:', isAuth);
+    return isAuth;
   }
 }

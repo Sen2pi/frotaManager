@@ -202,28 +202,42 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   onQuickAction(action: string): void {
+    console.log('🎯 Dashboard - Quick action clicked:', action);
     switch (action) {
       case 'add-vehicle':
+        console.log('🎯 Dashboard - Adding vehicle...');
         this.showSnackBar('Fonctionnalité d\'ajout de véhicule en cours de développement', 'info');
         break;
       case 'add-driver':
+        console.log('🎯 Dashboard - Adding driver...');
         this.showSnackBar('Fonctionnalité d\'ajout de conducteur en cours de développement', 'info');
         break;
       case 'schedule-maintenance':
+        console.log('🎯 Dashboard - Scheduling maintenance...');
         this.showSnackBar('Fonctionnalité de planification de maintenance en cours de développement', 'info');
         break;
       case 'generate-report':
+        console.log('🎯 Dashboard - Generating report...');
         this.showSnackBar('Fonctionnalité de génération de rapport en cours de développement', 'info');
+        break;
+      default:
+        console.log('🎯 Dashboard - Unknown action:', action);
         break;
     }
   }
 
   private showSnackBar(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
-    this.snackBar.open(message, 'Fermer', {
-      duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      panelClass: type === 'error' ? 'error-snackbar' : type === 'success' ? 'success-snackbar' : 'info-snackbar'
-    });
+    console.log('🍞 Dashboard - Showing snackbar:', message, type);
+    try {
+      this.snackBar.open(message, 'Fermer', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        panelClass: type === 'error' ? 'error-snackbar' : type === 'success' ? 'success-snackbar' : 'info-snackbar'
+      });
+      console.log('🍞 Dashboard - Snackbar opened successfully');
+    } catch (error) {
+      console.error('🍞 Dashboard - Error showing snackbar:', error);
+    }
   }
 }

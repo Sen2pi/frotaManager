@@ -1,0 +1,197 @@
+<div class="profile-container">
+  <!-- Header Section -->
+  <div class="profile-header">
+    <div class="header-content">
+      <div class="avatar-section">
+        <div class="profile-avatar" [style.background-image]="'url(' + user.avatar + ')'">
+          {{ user.name.charAt(0) }}
+        </div>
+        <div class="user-info">
+          <h1 class="user-name">{{ user.name }}</h1>
+          <p class="user-role">{{ getRoleDisplayName(user.role) }}</p>
+          <p class="user-department">{{ user.department }}</p>
+        </div>
+      </div>
+      <div class="user-stats">
+        <div class="stat-item">
+          <mat-icon class="stat-icon">schedule</mat-icon>
+          <div class="stat-content">
+            <span class="stat-value">Dernière connexion</span>
+            <span class="stat-label">{{ user.lastLogin | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <mat-icon class="stat-icon">calendar_today</mat-icon>
+          <div class="stat-content">
+            <span class="stat-value">Membre depuis</span>
+            <span class="stat-label">{{ user.createdAt | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="profile-content">
+    <div class="content-grid">
+      <!-- Profile Information -->
+      <mat-card class="profile-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="card-icon">person</mat-icon>
+            Informations Personnelles
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="profileForm" (ngSubmit)="onSaveProfile()">
+            <div class="form-grid">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Nom complet</mat-label>
+                <input matInput formControlName="name" placeholder="Votre nom complet">
+                <mat-error *ngIf="profileForm.get('name')?.hasError('required')">
+                  Le nom est requis
+                </mat-error>
+                <mat-error *ngIf="profileForm.get('name')?.hasError('minlength')">
+                  Le nom doit contenir au moins 2 caractères
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="votre.email@entreprise.com">
+                <mat-error *ngIf="profileForm.get('email')?.hasError('required')">
+                  L'email est requis
+                </mat-error>
+                <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
+                  Format d'email invalide
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Téléphone</mat-label>
+                <input matInput formControlName="phone" placeholder="+33 1 23 45 67 89">
+                <mat-error *ngIf="profileForm.get('phone')?.hasError('required')">
+                  Le téléphone est requis
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Département</mat-label>
+                <input matInput formControlName="department" placeholder="Votre département">
+                <mat-error *ngIf="profileForm.get('department')?.hasError('required')">
+                  Le département est requis
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" type="submit" [disabled]="!profileForm.valid || saving">
+                <mat-spinner diameter="20" *ngIf="saving"></mat-spinner>
+                <span *ngIf="!saving">Sauvegarder les modifications</span>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Change Password -->
+      <mat-card class="password-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="card-icon">lock</mat-icon>
+            Changer le Mot de Passe
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Mot de passe actuel</mat-label>
+              <input matInput formControlName="currentPassword" type="password" placeholder="Votre mot de passe actuel">
+              <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+                Le mot de passe actuel est requis
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Nouveau mot de passe</mat-label>
+              <input matInput formControlName="newPassword" type="password" placeholder="Nouveau mot de passe">
+              <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+                Le nouveau mot de passe est requis
+              </mat-error>
+              <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+                Le mot de passe doit contenir au moins 8 caractères
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Confirmer le nouveau mot de passe</mat-label>
+              <input matInput formControlName="confirmPassword" type="password" placeholder="Confirmer le mot de passe">
+              <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+                La confirmation est requise
+              </mat-error>
+            </mat-form-field>
+
+            <div class="password-error" *ngIf="passwordForm.hasError('passwordMismatch')">
+              <mat-icon>error</mat-icon>
+              Les mots de passe ne correspondent pas
+            </div>
+
+            <div class="form-actions">
+              <button mat-raised-button color="accent" type="submit" [disabled]="!passwordForm.valid || saving">
+                <mat-spinner diameter="20" *ngIf="saving"></mat-spinner>
+                <span *ngIf="!saving">Changer le mot de passe</span>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Permissions -->
+      <mat-card class="permissions-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="card-icon">security</mat-icon>
+            Permissions et Accès
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="permissions-grid">
+            <mat-chip *ngFor="let permission of user.permissions" class="permission-chip">
+              <mat-icon>check_circle</mat-icon>
+              {{ getPermissionDisplayName(permission) }}
+            </mat-chip>
+          </div>
+          
+          <mat-divider class="divider"></mat-divider>
+          
+          <div class="account-info">
+            <div class="info-item">
+              <mat-icon>badge</mat-icon>
+              <div class="info-content">
+                <span class="info-label">ID Utilisateur</span>
+                <span class="info-value">{{ user.id }}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <mat-icon>email</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Email</span>
+                <span class="info-value">{{ user.email }}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <mat-icon>admin_panel_settings</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Rôle</span>
+                <span class="info-value">{{ getRoleDisplayName(user.role) }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div> 

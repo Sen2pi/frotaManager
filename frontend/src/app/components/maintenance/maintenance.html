@@ -4,10 +4,16 @@
       <h1 class="maintenance-title">Gestion de la Maintenance</h1>
       <p class="maintenance-subtitle">Planifiez et suivez les maintenances de vos véhicules</p>
     </div>
-    <button mat-raised-button color="primary" class="add-button" (click)="addMaintenance()">
-      <mat-icon>build</mat-icon>
-      Planifier Maintenance
-    </button>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" class="add-button" (click)="addMaintenance()">
+        <mat-icon>build</mat-icon>
+        Planifier Maintenance
+      </button>
+      <button mat-raised-button color="accent" class="filter-button" (click)="showFilters()">
+        <mat-icon>filter_list</mat-icon>
+        Filtres
+      </button>
+    </div>
   </div>
 
   <!-- Indicateur de chargement -->

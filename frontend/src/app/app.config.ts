@@ -15,7 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideAnimations(),
     provideHttpClient(),
-    provideZonelessChangeDetection(),
     provideAnimationsAsync(),
     provideNativeDateAdapter()
   ]

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Controller para Dashboard com métricas e analytics
@@ -123,5 +125,44 @@ public class DashboardController {
         Map<String, Object> result = new HashMap<>();
         result.put("topDrivers", driverService.getDriversWithHighRating(4.0));
         return ResponseEntity.ok(result);
+    }
+    
+    /**
+     * Obtém atividades recentes
+     */
+    @GetMapping("/recent-activities")
+    public ResponseEntity<List<Map<String, Object>>> getRecentActivities() {
+        List<Map<String, Object>> activities = new ArrayList<>();
+        
+        // Simular atividades recentes
+        Map<String, Object> activity1 = new HashMap<>();
+        activity1.put("icon", "directions_car");
+        activity1.put("title", "Nouveau véhicule ajouté");
+        activity1.put("description", "Renault Clio 2023 - AB-123-CD");
+        activity1.put("time", "Il y a 2 heures");
+        activities.add(activity1);
+        
+        Map<String, Object> activity2 = new HashMap<>();
+        activity2.put("icon", "build");
+        activity2.put("title", "Maintenance planifiée");
+        activity2.put("description", "Peugeot 308 - Révision générale");
+        activity2.put("time", "Il y a 4 heures");
+        activities.add(activity2);
+        
+        Map<String, Object> activity3 = new HashMap<>();
+        activity3.put("icon", "person");
+        activity3.put("title", "Conducteur assigné");
+        activity3.put("description", "Jean Dupont - Véhicule BMW X3");
+        activity3.put("time", "Il y a 6 heures");
+        activities.add(activity3);
+        
+        Map<String, Object> activity4 = new HashMap<>();
+        activity4.put("icon", "warning");
+        activity4.put("title", "Alerte maintenance");
+        activity4.put("description", "Audi A4 - Huile moteur faible");
+        activity4.put("time", "Il y a 8 heures");
+        activities.add(activity4);
+        
+        return ResponseEntity.ok(activities);
     }
 } 
