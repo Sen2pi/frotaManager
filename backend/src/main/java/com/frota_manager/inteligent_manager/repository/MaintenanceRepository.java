@@ -32,7 +32,18 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> 
     /**
      * Encontra manutenções por veículo
      */
+     
     List<Maintenance> findByVehicleId(Long vehicleId);
+    
+    /**
+     * Encontra manutenções por veículo ordenadas por data agendada
+     */
+    List<Maintenance> findByVehicleIdOrderByScheduledDateDesc(Long vehicleId);
+    
+    /**
+     * Encontra manutenções por status ordenadas por data agendada
+     */
+    List<Maintenance> findByStatusOrderByScheduledDateAsc(MaintenanceStatus status);
     
     /**
      * Encontra manutenções em progresso
@@ -77,7 +88,7 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> 
     /**
      * Encontra manutenções com custo acima de um valor
      */
-    @Query("SELECT m FROM Maintenance m WHERE m.cost > :minCost")
+    @Query("SELECT m FROM Maintenance m WHERE m.estimatedCost > :minCost")
     List<Maintenance> findExpensiveMaintenances(@Param("minCost") BigDecimal minCost);
     
     /**
@@ -98,7 +109,7 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> 
     /**
      * Calcula o custo total das manutenções por veículo
      */
-    @Query("SELECT SUM(m.cost) FROM Maintenance m WHERE m.vehicle.id = :vehicleId AND m.status = 'COMPLETED'")
+    @Query("SELECT SUM(m.actualCost) FROM Maintenance m WHERE m.vehicle.id = :vehicleId AND m.status = 'COMPLETED'")
     BigDecimal getTotalCostByVehicle(@Param("vehicleId") Long vehicleId);
     
     /**
@@ -111,4 +122,50 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> 
      * Encontra manutenções por descrição
      */
     List<Maintenance> findByDescriptionContainingIgnoreCase(String description);
+    
+    /**
+     * Encontra manutenções por tipo ordenadas por data agendada
+     */
+    List<Maintenance> findByTypeOrderByScheduledDateDesc(MaintenanceType type);
+    
+    /**
+     * Encontra manutenções por período específico
+     */
+    @Query("SELECT m FROM Maintenance m WHERE DATE(m.scheduledDate) BETWEEN :startDate AND :endDate ORDER BY m.scheduledDate ASC")
+    List<Maintenance> findByScheduledDateBetweenOrderByScheduledDateAsc(@Param("startDate") java.time.LocalDate startDate, @Param("endDate") java.time.LocalDate endDate);
+    
+    /**
+     * Encontra manutenções por custo
+     */
+    @Query("SELECT m FROM Maintenance m WHERE m.actualCost BETWEEN :minCost AND :maxCost ORDER BY m.actualCost DESC")
+    List<Maintenance> findByActualCostBetweenOrderByCostDesc(@Param("minCost") BigDecimal minCost, @Param("maxCost") BigDecimal maxCost);
+    
+    /**
+     * Encontra manutenções por oficina 
+     */
+    List<Maintenance> findByWorkshopNameContainingIgnoreCaseOrderByScheduledDateDesc(String workshop);
+    
+    /**
+     * Alias method for workshop
+     */
+    default List<Maintenance> findByWorkshopContainingIgnoreCaseOrderByScheduledDateDesc(String workshop) {
+        return findByWorkshopNameContainingIgnoreCaseOrderByScheduledDateDesc(workshop);
+    }
+    
+    /**
+     * Encontra manutenções por técnico
+     */
+    List<Maintenance> findByTechnicianNameContainingIgnoreCaseOrderByScheduledDateDesc(String technician);
+    
+    /**
+     * Alias method for technician
+     */
+    default List<Maintenance> findByTechnicianContainingIgnoreCaseOrderByScheduledDateDesc(String technician) {
+        return findByTechnicianNameContainingIgnoreCaseOrderByScheduledDateDesc(technician);
+    }
+    
+    /**
+     * Encontra manutenções por notas
+     */
+    List<Maintenance> findByNotesContainingIgnoreCaseOrderByScheduledDateDesc(String notes);
 } 

@@ -12,5 +12,11 @@ public record CreateMaintenanceDto(
     MaintenanceType type,
     LocalDateTime scheduledDate,
     String technicianName,
-    String workshopName
-) {}
+    String workshopName,
+    java.math.BigDecimal estimatedCost,
+    String notes
+) {
+    // Alias methods for compatibility
+    public String technician() { return technicianName; }
+    public String workshop() { return workshopName; }
+}

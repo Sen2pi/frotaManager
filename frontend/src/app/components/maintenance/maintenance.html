@@ -4,20 +4,38 @@
       <h1 class="maintenance-title">Gestion de la Maintenance</h1>
       <p class="maintenance-subtitle">Planifiez et suivez les maintenances de vos véhicules</p>
     </div>
-    <button mat-raised-button color="primary" class="add-button">
+    <button mat-raised-button color="primary" class="add-button" (click)="addMaintenance()">
       <mat-icon>build</mat-icon>
       Planifier Maintenance
     </button>
   </div>
 
-  <div class="maintenance-grid">
+  <!-- Indicateur de chargement -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des maintenances...</p>
+  </div>
+
+  <!-- Message si aucune maintenance -->
+  <div class="no-data-container" *ngIf="!loading && maintenances.length === 0">
+    <mat-icon class="no-data-icon">build</mat-icon>
+    <h3>Aucune maintenance planifiée</h3>
+    <p>Commencez par planifier votre première maintenance</p>
+    <button mat-raised-button color="primary" (click)="addMaintenance()">
+      <mat-icon>add</mat-icon>
+      Planifier Maintenance
+    </button>
+  </div>
+
+  <!-- Liste des maintenances -->
+  <div class="maintenance-grid" *ngIf="!loading && maintenances.length > 0">
     <mat-card class="maintenance-card" *ngFor="let maintenance of maintenances" [@fadeInUp]>
       <mat-card-header>
-        <div mat-card-avatar class="maintenance-avatar">
-          <mat-icon>build</mat-icon>
+        <div mat-card-avatar class="maintenance-avatar" [class]="'avatar-' + maintenance.type.toLowerCase()">
+          <mat-icon>{{ getTypeIcon(maintenance.type) }}</mat-icon>
         </div>
         <mat-card-title>{{ maintenance.description }}</mat-card-title>
-        <mat-card-subtitle>Véhicule #{{ maintenance.vehicleId }}</mat-card-subtitle>
+        <mat-card-subtitle>{{ getVehicleInfo(maintenance.vehicleId) }}</mat-card-subtitle>
         <div class="maintenance-status" [class]="'status-' + maintenance.status.toLowerCase()">
           {{ getStatusLabel(maintenance.status) }}
         </div>
@@ -29,31 +47,63 @@
             <mat-icon>category</mat-icon>
             <span>Type: {{ getTypeLabel(maintenance.type) }}</span>
           </div>
-          <div class="detail-item">
+          <div class="detail-item" *ngIf="maintenance.estimatedCost">
             <mat-icon>euro</mat-icon>
-            <span>Coût: {{ maintenance.cost }}€</span>
+            <span>Coût estimé: {{ maintenance.estimatedCost }}€</span>
+          </div>
+          <div class="detail-item" *ngIf="maintenance.actualCost">
+            <mat-icon>account_balance_wallet</mat-icon>
+            <span>Coût réel: {{ maintenance.actualCost }}€</span>
           </div>
           <div class="detail-item">
             <mat-icon>schedule</mat-icon>
-            <span>Planifiée: {{ maintenance.scheduledDate | date:'dd/MM/yyyy' }}</span>
+            <span>Planifiée: {{ maintenance.scheduledDate | date:'dd/MM/yyyy HH:mm' }}</span>
           </div>
-          <div class="detail-item" *ngIf="maintenance.mechanicName">
+          <div class="detail-item" *ngIf="maintenance.startDate">
+            <mat-icon>play_arrow</mat-icon>
+            <span>Démarrée: {{ maintenance.startDate | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="detail-item" *ngIf="maintenance.completionDate">
+            <mat-icon>check_circle</mat-icon>
+            <span>Terminée: {{ maintenance.completionDate | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="detail-item" *ngIf="maintenance.technician">
             <mat-icon>person</mat-icon>
-            <span>Mécanicien: {{ maintenance.mechanicName }}</span>
+            <span>Technicien: {{ maintenance.technician }}</span>
+          </div>
+          <div class="detail-item" *ngIf="maintenance.workshop">
+            <mat-icon>home_repair_service</mat-icon>
+            <span>Atelier: {{ maintenance.workshop }}</span>
+          </div>
+          <div class="detail-item" *ngIf="maintenance.notes">
+            <mat-icon>note</mat-icon>
+            <span>Notes: {{ maintenance.notes }}</span>
           </div>
         </div>
       </mat-card-content>
 
-      <mat-card-actions>
-        <button mat-button color="primary" (click)="editMaintenance(maintenance)">
+      <mat-card-actions align="end">
+        <!-- Actions conditionnelles selon le statut -->
+        <button mat-button color="primary" (click)="editMaintenance(maintenance)" 
+                *ngIf="maintenance.status !== 'COMPLETED'">
           <mat-icon>edit</mat-icon>
           Modifier
         </button>
-        <button mat-button color="accent" (click)="viewDetails(maintenance)">
-          <mat-icon>visibility</mat-icon>
-          Détails
+        
+        <button mat-button color="accent" (click)="startMaintenance(maintenance)" 
+                *ngIf="maintenance.status === 'PLANNED'">
+          <mat-icon>play_arrow</mat-icon>
+          Démarrer
         </button>
-        <button mat-button color="warn" (click)="deleteMaintenance(maintenance)">
+        
+        <button mat-button color="primary" (click)="completeMaintenance(maintenance)" 
+                *ngIf="maintenance.status === 'IN_PROGRESS'">
+          <mat-icon>check_circle</mat-icon>
+          Terminer
+        </button>
+        
+        <button mat-button color="warn" (click)="deleteMaintenance(maintenance)" 
+                *ngIf="maintenance.status !== 'IN_PROGRESS'">
           <mat-icon>delete</mat-icon>
           Supprimer
         </button>

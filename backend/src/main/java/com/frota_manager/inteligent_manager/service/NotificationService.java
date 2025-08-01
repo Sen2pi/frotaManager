@@ -331,10 +331,10 @@ public class NotificationService {
         LocalDate today = LocalDate.now();
         LocalDate alertDate = today.plusDays(7); // Alerta 7 dias antes
         
-        List<Vehicle> vehiclesDueMaintenance = vehicleRepository.findVehiclesNeedingMaintenance();
+        List<Vehicle> vehiclesDueMaintenance = vehicleRepository.findVehiclesNeedingMaintenance(alertDate.atStartOfDay());
         for (Vehicle vehicle : vehiclesDueMaintenance) {
             if (vehicle.getNextMaintenanceDate() != null && 
-                vehicle.getNextMaintenanceDate().isBefore(alertDate)) {
+                vehicle.getNextMaintenanceDate().isBefore(alertDate.atStartOfDay())) {
                 
                 // Verifica se já existe notificação similar
                 List<Notification> existing = notificationRepository.findByEntityTypeAndEntityIdOrderByCreatedAtDesc("Vehicle", vehicle.getId());
@@ -385,7 +385,7 @@ public class NotificationService {
                                n.getCreatedAt().isAfter(LocalDateTime.now().minusHours(6)));
             
             if (!hasRecentAlert) {
-                createLowFuelNotification(vehicle.getId(), vehicle.getLicensePlate(), vehicle.getCurrentFuelLevel());
+                createLowFuelNotification(vehicle.getId(), vehicle.getLicensePlate(), BigDecimal.valueOf(vehicle.getCurrentFuelLevel()));
             }
         }
     }

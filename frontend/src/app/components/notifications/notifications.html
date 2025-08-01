@@ -1,32 +1,123 @@
 <div class="notifications-container fade-in">
   <div class="notifications-header">
     <div class="header-content">
-      <h1 class="notifications-title">Notifications</h1>
+      <h1 class="notifications-title">
+        <mat-icon>notifications</mat-icon>
+        Notifications 
+        <mat-badge [matBadge]="unreadCount" matBadgeColor="warn" [matBadgeHidden]="unreadCount === 0">
+        </mat-badge>
+      </h1>
       <p class="notifications-subtitle">Restez informé des événements importants</p>
     </div>
-    <button mat-raised-button color="primary" class="mark-all-read">
-      <mat-icon>done_all</mat-icon>
-      Tout Marquer comme Lu
-    </button>
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" class="mark-all-read" (click)="markAllAsRead()" 
+              [disabled]="unreadCount === 0">
+        <mat-icon>done_all</mat-icon>
+        Tout Marquer comme Lu
+      </button>
+      <button mat-stroked-button color="accent" (click)="forceCheckAlerts()">
+        <mat-icon>refresh</mat-icon>
+        Vérifier Alertes
+      </button>
+    </div>
   </div>
 
-  <div class="notifications-list">
-    <mat-card class="notification-card" *ngFor="let notification of notifications" [@fadeInUp]>
+  <!-- Filtres -->
+  <div class="filters-section">
+    <h3>Filtrer par :</h3>
+    <div class="filter-chips">
+      <mat-chip-set>
+        <mat-chip (click)="showAllNotifications()" selected>
+          <mat-icon>view_list</mat-icon>
+          Toutes
+        </mat-chip>
+        <mat-chip (click)="filterByPriority(NotificationPriority.CRITICAL)" class="critical-chip">
+          <mat-icon>error</mat-icon>
+          Critiques
+        </mat-chip>
+        <mat-chip (click)="filterByPriority(NotificationPriority.HIGH)" class="high-chip">
+          <mat-icon>warning</mat-icon>
+          Priorité Haute
+        </mat-chip>
+        <mat-chip (click)="filterByType(NotificationType.MAINTENANCE_DUE)" class="maintenance-chip">
+          <mat-icon>build</mat-icon>
+          Maintenance
+        </mat-chip>
+        <mat-chip (click)="filterByType(NotificationType.LOW_FUEL)" class="fuel-chip">
+          <mat-icon>local_gas_station</mat-icon>
+          Carburant
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des notifications...</p>
+  </div>
+
+  <!-- Liste des notifications -->
+  <div class="notifications-list" *ngIf="!loading">
+    <mat-card class="notification-card" 
+              *ngFor="let notification of notifications" 
+              [@fadeInUp]
+              [class.unread]="!notification.isRead"
+              [class.expired]="notification.isExpired"
+              (click)="onNotificationClick(notification)">
       <mat-card-content>
         <div class="notification-content">
-          <div class="notification-icon" [class]="'icon-' + notification.type.toLowerCase()">
+          <div class="notification-icon" 
+               [class]="'icon-' + notification.type.toLowerCase()"
+               [style.color]="getPriorityColor(notification.priority)">
             <mat-icon>{{ getIcon(notification.type) }}</mat-icon>
           </div>
+          
           <div class="notification-details">
-            <h3 class="notification-title">{{ notification.title }}</h3>
+            <div class="notification-header">
+              <h3 class="notification-title">{{ notification.title }}</h3>
+              <div class="notification-badges">
+                <mat-chip class="priority-chip" 
+                          [style.background-color]="getPriorityColor(notification.priority)"
+                          [style.color]="'white'">
+                  <mat-icon>{{ getPriorityIcon(notification.priority) }}</mat-icon>
+                  {{ getPriorityDisplayName(notification.priority) }}
+                </mat-chip>
+                <mat-chip class="type-chip">
+                  {{ getTypeDisplayName(notification.type) }}
+                </mat-chip>
+              </div>
+            </div>
+            
             <p class="notification-message">{{ notification.message }}</p>
-            <span class="notification-time">{{ notification.time }}</span>
+            
+            <div class="notification-meta">
+              <span class="notification-time">
+                <mat-icon>access_time</mat-icon>
+                {{ getTimeAgo(notification.createdAt) }}
+              </span>
+              <span class="notification-status" *ngIf="!notification.isRead">
+                <mat-icon>fiber_new</mat-icon>
+                Nouveau
+              </span>
+              <span class="notification-expired" *ngIf="notification.isExpired">
+                <mat-icon>schedule</mat-icon>
+                Expiré
+              </span>
+            </div>
           </div>
-          <div class="notification-actions">
-            <button mat-icon-button (click)="markAsRead(notification)">
+          
+          <div class="notification-actions" (click)="$event.stopPropagation()">
+            <button mat-icon-button 
+                    (click)="markAsRead(notification)" 
+                    *ngIf="!notification.isRead"
+                    matTooltip="Marquer comme lu">
               <mat-icon>check</mat-icon>
             </button>
-            <button mat-icon-button (click)="deleteNotification(notification)">
+            <button mat-icon-button 
+                    (click)="deleteNotification(notification)" 
+                    matTooltip="Supprimer"
+                    color="warn">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
@@ -35,9 +126,46 @@
     </mat-card>
   </div>
 
-  <div class="empty-state" *ngIf="notifications.length === 0">
+  <!-- État vide -->
+  <div class="empty-state" *ngIf="!loading && notifications.length === 0">
     <mat-icon class="empty-icon">notifications_off</mat-icon>
     <h3>Aucune notification</h3>
     <p>Vous n'avez aucune notification pour le moment.</p>
+    <button mat-raised-button color="primary" (click)="forceCheckAlerts()">
+      <mat-icon>refresh</mat-icon>
+      Vérifier les Alertes
+    </button>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-section" *ngIf="!loading && notifications.length > 0">
+    <mat-card class="stats-card">
+      <mat-card-content>
+        <h3>Statistiques</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <mat-icon class="stat-icon">notifications</mat-icon>
+            <div class="stat-details">
+              <span class="stat-value">{{ notifications.length }}</span>
+              <span class="stat-label">Total</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <mat-icon class="stat-icon unread">notifications_active</mat-icon>
+            <div class="stat-details">
+              <span class="stat-value">{{ unreadCount }}</span>
+              <span class="stat-label">Non Lues</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <mat-icon class="stat-icon critical">error</mat-icon>
+            <div class="stat-details">
+              <span class="stat-value">{{ getCriticalCount() }}</span>
+              <span class="stat-label">Critiques</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>

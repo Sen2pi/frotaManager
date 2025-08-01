@@ -1,9 +1,9 @@
 package com.frota_manager.inteligent_manager.service;
 
-import com.frota_manager.inteligent_manager.dto.MaintenanceCreateDto;
+import com.frota_manager.inteligent_manager.dto.CreateMaintenanceDto;
 import com.frota_manager.inteligent_manager.dto.MaintenanceDto;
 import com.frota_manager.inteligent_manager.dto.MaintenanceSummaryDto;
-import com.frota_manager.inteligent_manager.dto.MaintenanceUpdateDto;
+import com.frota_manager.inteligent_manager.dto.UpdateMaintenanceDto;
 import com.frota_manager.inteligent_manager.model.Maintenance;
 import com.frota_manager.inteligent_manager.model.MaintenanceStatus;
 import com.frota_manager.inteligent_manager.model.MaintenanceType;
@@ -45,7 +45,7 @@ public class MaintenanceService {
     /**
      * Cria uma nova manutenção
      */
-    public MaintenanceDto createMaintenance(MaintenanceCreateDto createDto) {
+    public MaintenanceDto createMaintenance(CreateMaintenanceDto createDto) {
         System.out.println("🔧 MaintenanceService: Creating maintenance for vehicle ID: " + createDto.vehicleId());
         
         Vehicle vehicle = vehicleRepository.findById(createDto.vehicleId())
@@ -133,7 +133,7 @@ public class MaintenanceService {
      * Busca manutenções vencidas (planned/in_progress que passaram da data)
      */
     public List<MaintenanceSummaryDto> getOverdueMaintenances() {
-        return maintenanceRepository.findOverdueMaintenances(LocalDate.now())
+        return maintenanceRepository.findOverdueMaintenances(LocalDateTime.now())
             .stream()
             .map(this::mapToSummaryDto)
             .collect(Collectors.toList());
@@ -162,7 +162,7 @@ public class MaintenanceService {
     /**
      * Atualiza uma manutenção
      */
-    public MaintenanceDto updateMaintenance(Long id, MaintenanceUpdateDto updateDto) {
+    public MaintenanceDto updateMaintenance(Long id, UpdateMaintenanceDto updateDto) {
         System.out.println("🔧 MaintenanceService: Updating maintenance ID: " + id);
         
         Maintenance maintenance = maintenanceRepository.findById(id)
@@ -257,7 +257,7 @@ public class MaintenanceService {
 
         // Atualiza a data de última manutenção do veículo
         Vehicle vehicle = maintenance.getVehicle();
-        vehicle.setLastMaintenanceDate(LocalDate.now());
+        vehicle.setLastMaintenanceDate(LocalDateTime.now());
         vehicleRepository.save(vehicle);
 
         Maintenance updated = maintenanceRepository.save(maintenance);
@@ -314,7 +314,7 @@ public class MaintenanceService {
         long plannedCount = maintenanceRepository.countByStatus(MaintenanceStatus.PLANNED);
         long inProgressCount = maintenanceRepository.countByStatus(MaintenanceStatus.IN_PROGRESS);
         long completedCount = maintenanceRepository.countByStatus(MaintenanceStatus.COMPLETED);
-        long overdueCount = maintenanceRepository.findOverdueMaintenances(LocalDate.now()).size();
+        long overdueCount = maintenanceRepository.findOverdueMaintenances(LocalDateTime.now()).size();
         
         BigDecimal totalCost = maintenanceRepository.findCompletedMaintenances()
             .stream()
@@ -338,18 +338,18 @@ public class MaintenanceService {
             maintenance.getId(),
             maintenance.getVehicle().getId(),
             maintenance.getVehicle().getLicensePlate(),
-            maintenance.getVehicle().getBrand() + " " + maintenance.getVehicle().getModel(),
-            maintenance.getType(),
             maintenance.getDescription(),
+            maintenance.getType(),
+            maintenance.getStatus(),
             maintenance.getScheduledDate(),
             maintenance.getStartDate(),
             maintenance.getCompletionDate(),
-            maintenance.getStatus(),
-            maintenance.getEstimatedCost(),
-            maintenance.getActualCost(),
-            maintenance.getWorkshop(),
-            maintenance.getTechnician(),
-            maintenance.getNotes()
+            maintenance.getEstimatedCost(), // Using estimatedCost for the cost field
+            maintenance.getTechnicianName(),
+            maintenance.getWorkshopName(),
+            maintenance.getNotes(),
+            maintenance.getCreatedAt(),
+            maintenance.getUpdatedAt()
         );
     }
 
@@ -357,11 +357,11 @@ public class MaintenanceService {
         return new MaintenanceSummaryDto(
             maintenance.getId(),
             maintenance.getVehicle().getLicensePlate(),
-            maintenance.getType(),
             maintenance.getDescription(),
-            maintenance.getScheduledDate(),
+            maintenance.getType(),
             maintenance.getStatus(),
-            maintenance.getWorkshop()
+            maintenance.getScheduledDate(),
+            maintenance.isOverdue()
         );
     }
 

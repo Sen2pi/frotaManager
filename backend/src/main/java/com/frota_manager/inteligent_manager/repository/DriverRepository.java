@@ -92,4 +92,10 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
      */
     @Query("SELECT d FROM Driver d WHERE d.totalTrips >= :minTrips")
     List<Driver> findExperiencedDrivers(@Param("minTrips") Integer minTrips);
+    
+    /**
+     * Encontra condutores com licença expirando antes de uma data
+     */
+    @Query("SELECT d FROM Driver d WHERE d.licenseExpiryDate < :date")
+    List<Driver> findByLicenseExpiryDateBefore(@Param("date") LocalDate date);
 } 

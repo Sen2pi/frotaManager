@@ -4,7 +4,12 @@
     "allow": [
       "Bash(docker-compose:*)",
       "Bash(curl:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(rm:*)",
+      "Bash(mvn clean:*)",
+      "Bash(mvn compile:*)",
+      "Bash(mvn spring-boot:run:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": []
   }

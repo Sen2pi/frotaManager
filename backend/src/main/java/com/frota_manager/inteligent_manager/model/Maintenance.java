@@ -46,9 +46,13 @@ public class Maintenance {
     @Column(name = "completion_date")
     private LocalDateTime completionDate;
     
-    @Positive(message = "O custo deve ser positivo")
-    @Column(name = "cost", precision = 10, scale = 2)
-    private BigDecimal cost;
+    @Positive(message = "O custo estimado deve ser positivo")
+    @Column(name = "estimated_cost", precision = 10, scale = 2)
+    private BigDecimal estimatedCost;
+    
+    @Positive(message = "O custo real deve ser positivo")
+    @Column(name = "actual_cost", precision = 10, scale = 2)
+    private BigDecimal actualCost;
     
     @Column(name = "technician_name")
     private String technicianName;
@@ -101,14 +105,25 @@ public class Maintenance {
     public LocalDateTime getCompletionDate() { return completionDate; }
     public void setCompletionDate(LocalDateTime completionDate) { this.completionDate = completionDate; }
     
-    public BigDecimal getCost() { return cost; }
-    public void setCost(BigDecimal cost) { this.cost = cost; }
+    public BigDecimal getEstimatedCost() { return estimatedCost; }
+    public void setEstimatedCost(BigDecimal estimatedCost) { this.estimatedCost = estimatedCost; }
+    
+    public BigDecimal getActualCost() { return actualCost; }
+    public void setActualCost(BigDecimal actualCost) { this.actualCost = actualCost; }
     
     public String getTechnicianName() { return technicianName; }
     public void setTechnicianName(String technicianName) { this.technicianName = technicianName; }
     
+    // Alias methods for compatibility
+    public String getTechnician() { return technicianName; }
+    public void setTechnician(String technician) { this.technicianName = technician; }
+    
     public String getWorkshopName() { return workshopName; }
     public void setWorkshopName(String workshopName) { this.workshopName = workshopName; }
+    
+    // Alias methods for compatibility
+    public String getWorkshop() { return workshopName; }
+    public void setWorkshop(String workshop) { this.workshopName = workshop; }
     
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }

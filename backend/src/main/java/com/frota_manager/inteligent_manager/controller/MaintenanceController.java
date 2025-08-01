@@ -1,9 +1,9 @@
 package com.frota_manager.inteligent_manager.controller;
 
-import com.frota_manager.inteligent_manager.dto.MaintenanceCreateDto;
+import com.frota_manager.inteligent_manager.dto.CreateMaintenanceDto;
 import com.frota_manager.inteligent_manager.dto.MaintenanceDto;
 import com.frota_manager.inteligent_manager.dto.MaintenanceSummaryDto;
-import com.frota_manager.inteligent_manager.dto.MaintenanceUpdateDto;
+import com.frota_manager.inteligent_manager.dto.UpdateMaintenanceDto;
 import com.frota_manager.inteligent_manager.model.MaintenanceStatus;
 import com.frota_manager.inteligent_manager.model.MaintenanceType;
 import com.frota_manager.inteligent_manager.service.MaintenanceService;
@@ -40,7 +40,7 @@ public class MaintenanceController {
      * POST /api/maintenances
      */
     @PostMapping
-    public ResponseEntity<MaintenanceDto> createMaintenance(@Valid @RequestBody MaintenanceCreateDto createDto) {
+    public ResponseEntity<MaintenanceDto> createMaintenance(@Valid @RequestBody CreateMaintenanceDto createDto) {
         try {
             MaintenanceDto maintenance = maintenanceService.createMaintenance(createDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(maintenance);
@@ -159,7 +159,7 @@ public class MaintenanceController {
     @PutMapping("/{id}")
     public ResponseEntity<MaintenanceDto> updateMaintenance(
             @PathVariable Long id,
-            @Valid @RequestBody MaintenanceUpdateDto updateDto) {
+            @Valid @RequestBody UpdateMaintenanceDto updateDto) {
         
         try {
             MaintenanceDto maintenance = maintenanceService.updateMaintenance(id, updateDto);
