@@ -37,9 +37,7 @@ export class LoginComponent {
 
   // Credenciais de demonstração
   demoCredentials = [
-    { role: 'Admin', email: 'admin@alten.com', password: 'admin123', color: '#e53e3e' },
-    { role: 'Manager', email: 'manager@alten.com', password: 'manager123', color: '#3182ce' },
-    { role: 'Driver', email: 'driver@alten.com', password: 'driver123', color: '#38a169' }
+    { role: 'Driver', email: 'test@test.com', password: '123456', color: '#38a169' }
   ];
 
   constructor(
@@ -54,17 +52,24 @@ export class LoginComponent {
       return;
     }
 
+    console.log('🚀 Frontend: Sending login request');
+    console.log('📧 Email:', this.email);
+    console.log('🔑 Password length:', this.password.length);
+    console.log('🔑 Password:', this.password); // Temporary debug - remove in production
+
     this.loading = true;
     
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
         this.loading = false;
+        console.log('✅ Login success:', response);
         this.showSnackBar('Login realizado com sucesso!', 'success');
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         this.loading = false;
-        console.error('Erro no login:', error);
+        console.error('❌ Erro no login:', error);
+        console.error('❌ Error details:', error.error);
         this.showSnackBar('Erro no login. Verifique suas credenciais.', 'error');
       }
     });

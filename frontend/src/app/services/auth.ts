@@ -52,9 +52,14 @@ export class AuthService {
    * Realiza login do usuário
    */
   login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
+    const payload = { email, password };
+    console.log('🌐 AuthService: Making login request to:', `${this.apiUrl}/login`);
+    console.log('📦 AuthService: Payload:', payload);
+    
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, payload)
       .pipe(
         tap(response => {
+          console.log('📥 AuthService: Response received:', response);
           if (response.token && isPlatformBrowser(this.platformId)) {
             localStorage.setItem('token', response.token);
             this.setCurrentUser(response);
